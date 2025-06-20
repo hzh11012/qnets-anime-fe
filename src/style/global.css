@@ -1,0 +1,10 @@
+html,
+body,
+#root {
+    height: 100%;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #888 transparent;
+}
