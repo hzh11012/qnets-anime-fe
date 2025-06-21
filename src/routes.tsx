@@ -19,7 +19,7 @@ const authLoader = async () => {
 const WithLayout = ({ children }: { children: React.ReactNode }) => {
     const userInfo = useUserStore(state => state.userInfo);
     if (userInfo?.status === 0) {
-        return <Exception code="43" msg="账号已封禁" />;
+        return <Exception code="43" msg="账号未开通" />;
     }
     return <>{children}</>;
 };

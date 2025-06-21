@@ -10,12 +10,13 @@ import { links } from '@/links';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUserStore } from '@/store';
-import { Fan, Mail, Upload } from 'lucide-react';
+import { Fan, Mail, LogOut } from 'lucide-react';
 import { useNavigate, useMatch } from 'react-router-dom';
 import ThemeSwitch from '@/components/custom/theme-switch';
+import FailAvatar from '../custom/fail-avatar';
 
 const sidebarBtnClass =
-    'flex flex-col items-center text-sidebar-foreground cursor-pointer transition-colors group/link hover:text-theme';
+    'flex flex-col items-center text-card-foreground cursor-pointer transition-colors group/link hover:text-primary-foreground select-none';
 
 const AppSidebar: React.FC = () => {
     const user = useUserStore(state => state.userInfo);
@@ -36,15 +37,15 @@ const AppSidebar: React.FC = () => {
                         <div
                             key={index}
                             className={cn(sidebarBtnClass, 'gap-1', {
-                                'text-theme': isActive
+                                'text-primary-foreground': isActive
                             })}
                             onClick={() => navigate(url)}
                         >
                             <Icon size={22} />
                             <span
                                 className={cn(
-                                    'transition-colors text-sidebar-foreground/70 group-hover/link:text-theme/70',
-                                    { 'text-theme/70': isActive }
+                                    'transition-colors text-muted-foreground group-hover/link:text-primary-foreground/70',
+                                    { 'text-primary-foreground/70': isActive }
                                 )}
                             >
                                 {title}
@@ -58,7 +59,9 @@ const AppSidebar: React.FC = () => {
             >
                 <Avatar className={cn('size-8 cursor-pointer')} title="空间">
                     <AvatarImage src={user.avatar || ''} alt={user.nickname} />
-                    <AvatarFallback>{user.nickname.slice(0, 1)}</AvatarFallback>
+                    <AvatarFallback>
+                        <FailAvatar />
+                    </AvatarFallback>
                 </Avatar>
                 <div className={cn(sidebarBtnClass)} title="公告">
                     <Mail size={22} />
@@ -70,7 +73,7 @@ const AppSidebar: React.FC = () => {
                     <ThemeSwitch />
                 </div>
                 <div className={cn(sidebarBtnClass)} title="退出">
-                    <Upload size={22} />
+                    <LogOut size={22} />
                 </div>
             </SidebarFooter>
         </Sidebar>

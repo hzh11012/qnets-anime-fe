@@ -21,7 +21,7 @@ function SidebarProvider({
                 } as React.CSSProperties
             }
             className={cn(
-                'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full',
+                'group/sidebar-wrapper flex min-h-svh w-full',
                 className
             )}
             {...props}
@@ -38,7 +38,7 @@ function Sidebar({
 }: React.ComponentProps<'div'>) {
     return (
         <div
-            className="group peer text-sidebar-foreground hidden md:block"
+            className="group peer text-card-foreground hidden md:block"
             data-slot="sidebar"
         >
             {/* This is what handles the sidebar gap on desktop */}
@@ -57,7 +57,7 @@ function Sidebar({
                 <div
                     data-sidebar="sidebar"
                     data-slot="sidebar-inner"
-                    className="bg-sidebar flex h-full w-full flex-col"
+                    className="bg-card flex size-full flex-col"
                 >
                     {children}
                 </div>
@@ -72,7 +72,6 @@ function SidebarInset({ className, ...props }: React.ComponentProps<'main'>) {
             data-slot="sidebar-inset"
             className={cn(
                 'bg-background relative flex w-full flex-1 flex-col overflow-hidden',
-                'peer-data-[variant=inset]:m-2 peer-data-[variant=inset]:ml-0 peer-data-[variant=inset]:rounded-xl',
                 className
             )}
             {...props}

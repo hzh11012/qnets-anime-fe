@@ -1,13 +1,13 @@
+import React from 'react';
 import RingLoader from 'react-spinners/RingLoader';
-
 import { cn } from '@/lib/utils';
 
-interface loadingProps {
+interface LoadingProps {
     className?: string;
     size?: number;
 }
 
-const Loading: React.FC<loadingProps> = ({ className, size = 50 }) => {
+const Loading: React.FC<LoadingProps> = ({ className, size = 50 }) => {
     return (
         <div
             className={cn(
@@ -16,7 +16,7 @@ const Loading: React.FC<loadingProps> = ({ className, size = 50 }) => {
             )}
         >
             <RingLoader
-                color="var(--theme)"
+                color="var(--primary)"
                 size={size}
                 aria-label="加载中"
                 data-testid="loader"
