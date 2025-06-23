@@ -61,7 +61,11 @@ const SearchInput: React.FC<SearchInputProps> = ({
             <Input
                 data-value={!!keyword}
                 ref={inputRef}
-                className={cn('w-full pl-4 pr-16', inputClassName)}
+                className={cn(
+                    'w-full pl-2.5 md:pl-4',
+                    `${keyword ? 'pr-16' : 'pr-10.5'}`,
+                    inputClassName
+                )}
                 onChange={handleChange}
                 value={keyword}
                 onFocus={() => setIsFocus(true)}

@@ -23,6 +23,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "ahooks": "^3.8.5",
     "axios": "^1.10.0",
+    "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^0.515.0",
     "luxon": "^3.6.1",
