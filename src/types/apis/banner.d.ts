@@ -1,4 +1,4 @@
-interface BannerListItem {
+interface BannerOption {
     id: string;
     name: string;
     bannerUrl: string;
@@ -6,9 +6,9 @@ interface BannerListItem {
     videoCount: number;
 }
 
-interface BannerListRes {
+interface BannerOptionsRes {
     total: number;
-    rows: BannerListItem[];
+    rows: BannerOption[];
 }
 
-export { BannerListRes, BannerListItem };
+export { BannerOptionsRes, BannerOption };

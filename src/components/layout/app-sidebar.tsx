@@ -10,7 +10,7 @@ import { links } from '@/links';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUserStore } from '@/store';
-import { Fan, Mail, LogOut } from 'lucide-react';
+import { Mail, LogOut, MessageCirclePlus } from 'lucide-react';
 import { useNavigate, useMatch } from 'react-router-dom';
 import ThemeSwitch from '@/components/custom/theme-switch';
 import FailAvatar from '../custom/fail-avatar';
@@ -66,8 +66,8 @@ const AppSidebar: React.FC = () => {
                 <div className={cn(sidebarBtnClass)} title="公告">
                     <Mail size={22} />
                 </div>
-                <div className={cn(sidebarBtnClass)} title="动态">
-                    <Fan size={22} />
+                <div className={cn(sidebarBtnClass)} title="留言">
+                    <MessageCirclePlus size={22} />
                 </div>
                 <div className={cn(sidebarBtnClass)} title="主题">
                     <ThemeSwitch />

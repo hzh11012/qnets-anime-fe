@@ -12,14 +12,20 @@ const CLIENT_PREFIX = import.meta.env.VITE_CLIENT_PREFIX;
 // 认证 loader
 const authLoader = async () => {
     const { data } = await getUserInfo();
-    useUserStore.setState({ userInfo: data });
-    return data;
+    const permissions = data.permissions;
+    // 是否允许查询里番
+    const isAllowAnimeType4 = [ADMIN, `${CLIENT_PREFIX}:animetype_4:view`].some(
+        p => permissions.includes(p)
+    );
+
+    useUserStore.setState({ userInfo: data, isHentai: isAllowAnimeType4 });
+    return null;
 };
 
 const WithLayout = ({ children }: { children: React.ReactNode }) => {
     const userInfo = useUserStore(state => state.userInfo);
     if (userInfo?.status === 0) {
-        return <Exception code="43" msg="账号未开通" />;
+        return <Exception code="43" msg="账号未开通/已封禁" />;
     }
     return <>{children}</>;
 };

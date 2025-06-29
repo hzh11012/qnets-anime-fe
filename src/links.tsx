@@ -1,4 +1,4 @@
-import { House, LayoutList, Link, SquarePen } from 'lucide-react';
+import { House, LayoutList, SquareUser, Tv } from 'lucide-react';
 
 const links = [
     {
@@ -7,19 +7,19 @@ const links = [
         url: '/'
     },
     {
+        title: '导视',
+        icon: Tv,
+        url: '/guide'
+    },
+    {
         title: '热榜',
         icon: LayoutList,
         url: '/rank'
     },
     {
-        title: '留言',
-        icon: SquarePen,
-        url: '/message'
-    },
-    {
-        title: '友链',
-        icon: Link,
-        url: '/link'
+        title: '我的',
+        icon: SquareUser,
+        url: '/mine'
     }
 ];
 

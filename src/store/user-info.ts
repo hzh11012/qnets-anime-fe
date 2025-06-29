@@ -15,8 +15,12 @@ const useUserStore = create(
                 createdAt: '',
                 updatedAt: ''
             },
+            isHentai: false,
             setUserInfo: value => {
                 set(() => ({ userInfo: value }));
+            },
+            setIsHentai: value => {
+                set(() => ({ isHentai: value }));
             }
         }),
         {

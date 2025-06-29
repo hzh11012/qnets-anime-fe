@@ -3,22 +3,13 @@ import { Footer } from '@/components/ui/footer';
 import { cn } from '@/lib/utils';
 import { useMatch, useNavigate } from 'react-router-dom';
 import { links } from '@/links';
-import { SquareUser } from 'lucide-react';
-
-const mine = [
-    {
-        title: '我的',
-        icon: SquareUser,
-        url: '/mine'
-    }
-];
 
 const AppFooter: React.FC = () => {
     const navigate = useNavigate();
 
     return (
         <Footer className={cn('justify-around')}>
-            {links.concat(mine).map((link, index) => {
+            {links.map((link, index) => {
                 const { title, icon: Icon, url } = link;
                 const isActive = useMatch(url);
                 return (
