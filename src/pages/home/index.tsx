@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import AnimeType from '@/pages/home/anime-type';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnimeCardSkeleton } from '@/components/custom/anime-card';
+import { getTopicOptions } from '@/apis/topic';
+import AnimeTopic from './anime-topic';
 
 const ANIME_TYPES_MAP: Record<number, string> = {
     0: '剧场版推荐',
@@ -72,6 +74,8 @@ const Home: React.FC = () => {
     const setBannerList = useHomeStore(state => state.setBannerList);
     const animeTypeList = useHomeStore(state => state.animeTypeList);
     const setAnimeTypeList = useHomeStore(state => state.setAnimeTypeList);
+    const topicList = useHomeStore(state => state.topicList);
+    const setTopicList = useHomeStore(state => state.setTopicList);
 
     const isHentai = useUserStore(state => state.isHentai);
 
@@ -81,13 +85,15 @@ const Home: React.FC = () => {
     );
 
     const initData = useCallback(async () => {
-        const [bannerDate, ...animeTypeList] = await Promise.all([
+        const [bannerData, topicData, ...animeTypeList] = await Promise.all([
             getBannerOptions(),
+            getTopicOptions(),
             ...ANIME_TYPES.map(type => getAnimeOptions({ type }))
         ]);
 
         return {
-            bannerList: bannerDate.data.rows,
+            bannerList: bannerData.data.rows,
+            topicList: topicData.data.rows,
             animeTypeList: animeTypeList.map(item => item.data.rows)
         };
     }, [ANIME_TYPES]);
@@ -95,19 +101,28 @@ const Home: React.FC = () => {
     useRequest(initData, {
         debounceWait: 250,
         onSuccess: data => {
-            const { bannerList, animeTypeList } = data;
+            const { bannerList, topicList, animeTypeList } = data;
             setBannerList(bannerList);
+            setTopicList(topicList);
             setAnimeTypeList(animeTypeList);
         },
         onFinally: () => setLoading(false)
     });
 
     const handleAnimeClick = useCallback((id: string) => {
-        navigate(`detail/${id}`);
+        navigate(`anime/${id}`);
+    }, []);
+
+    const handleTopicClick = useCallback((id: string) => {
+        navigate(`topic/${id}`);
     }, []);
 
     const handleAllClick = useCallback((type: number) => {
         navigate(`search?type=${type}`);
+    }, []);
+
+    const handleTopicAllClick = useCallback(() => {
+        navigate('topic');
     }, []);
 
     const renderAnimeTypes = useMemo(
@@ -136,6 +151,13 @@ const Home: React.FC = () => {
             <Swiper list={bannerList} onClick={handleAnimeClick} />
 
             {renderAnimeTypes}
+
+            <AnimeTopic
+                title="专题推荐"
+                list={topicList}
+                onTopicClick={handleTopicClick}
+                onAllClick={() => handleTopicAllClick()}
+            />
         </div>
     );
 };

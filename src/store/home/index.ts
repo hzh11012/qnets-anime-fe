@@ -5,6 +5,7 @@ const useHomeStore = create<HomeState & HomeAction>(set => ({
     loading: true,
     bannerList: [],
     animeTypeList: [],
+    topicList: [],
     setLoading: value => {
         set(() => ({ loading: value }));
     },
@@ -13,6 +14,9 @@ const useHomeStore = create<HomeState & HomeAction>(set => ({
     },
     setAnimeTypeList: value => {
         set(() => ({ animeTypeList: value }));
+    },
+    setTopicList: value => {
+        set(() => ({ topicList: value }));
     }
 }));
 

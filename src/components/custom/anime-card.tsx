@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 interface AnimeCardProps extends AnimeCardSkeletonProps {
     image: string;
     title: string;
-    remark: string;
+    remark?: string;
     tip: string;
     onClick: () => void;
 }
@@ -104,16 +104,18 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
             >
                 {title}
             </div>
-            <div
-                className={cn(
-                    'w-fit line-clamp-1 text-xs mt-1.5 text-muted-foreground hover:text-primary cursor-pointer',
-                    'transition-[color]'
-                )}
-                title={remark}
-                onClick={onClick}
-            >
-                {remark}
-            </div>
+            {remark && (
+                <div
+                    className={cn(
+                        'w-fit line-clamp-1 text-xs mt-1.5 text-muted-foreground hover:text-primary cursor-pointer',
+                        'transition-[color]'
+                    )}
+                    title={remark}
+                    onClick={onClick}
+                >
+                    {remark}
+                </div>
+            )}
         </div>
     );
 };

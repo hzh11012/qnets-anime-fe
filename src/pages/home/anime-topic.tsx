@@ -2,54 +2,38 @@ import React, { useMemo, useCallback } from 'react';
 import { AnimeCard } from '@/components/custom/anime-card';
 import { Button } from '@/components/ui/button';
 import { cn, getResponsiveClasses } from '@/lib/utils';
-import { AnimeOption } from '@/types';
+import { TopicOption } from '@/types';
 import { ChevronRight } from 'lucide-react';
 
-interface AnimeTypeProps {
-    type?: 'horizontal' | 'vertical';
+interface AnimeTopicProps {
     title: string;
-    list: AnimeOption[];
-    onAnimeClick: (id: string) => void;
+    list: TopicOption[];
+    onTopicClick: (id: string) => void;
     onAllClick: () => void;
     className?: string;
 }
 
-const AnimeType: React.FC<AnimeTypeProps> = ({
-    type = 'vertical',
+const AnimeTopic: React.FC<AnimeTopicProps> = ({
     title,
     list,
     className,
-    onAnimeClick,
+    onTopicClick,
     onAllClick
 }) => {
     if (!list?.length) return null;
 
     const { maxCount, displayList } = useMemo(() => {
-        const maxCount = type === 'vertical' ? 7 : 5;
+        const maxCount = 5;
         const displayList = list.slice(0, maxCount);
         return { maxCount, displayList };
-    }, [type, list]);
+    }, [list]);
 
-    const handleAnimeClick = useCallback(
-        (id: string) => onAnimeClick(id),
-        [onAnimeClick]
+    const handleTopicClick = useCallback(
+        (id: string) => onTopicClick(id),
+        [onTopicClick]
     );
 
     const handleAllClick = useCallback(() => onAllClick(), [onAllClick]);
-
-    const getSubTitle = useCallback((item: AnimeOption) => {
-        const { videoCount, status } = item;
-
-        if (!videoCount) return '即将开播';
-
-        if (status === 1) {
-            return `更新至第${videoCount}话`;
-        } else if (status === 2) {
-            return `全${videoCount}话`;
-        }
-
-        return '即将开播';
-    }, []);
 
     return (
         <div className={cn('select-none transition-[margin]', className)}>
@@ -67,11 +51,7 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
             <div
                 className={cn(
                     'grid gap-4 text-sm',
-                    'md:flex md:items-center md:gap-6',
-                    {
-                        'grid-cols-3': type === 'vertical',
-                        'grid-cols-2': type === 'horizontal'
-                    },
+                    'md:flex md:items-center md:gap-6 grid-cols-2',
                     {
                         '[&>*:nth-last-child(1)]:max-md:hidden':
                             displayList?.length === maxCount
@@ -79,19 +59,21 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
                 )}
             >
                 {displayList.map((item, index) => {
-                    const { id, name, coverUrl, remark } = item;
-                    const subTitle = getSubTitle(item);
+                    const { id, name, coverUrl, count } = item;
+                    const remark = `${count}个影片`;
 
                     return (
                         <AnimeCard
-                            type={type}
                             key={id}
-                            className={getResponsiveClasses(index, type)}
+                            type="horizontal"
+                            className={getResponsiveClasses(
+                                index,
+                                'horizontal'
+                            )}
                             title={name}
-                            remark={remark}
+                            tip={remark}
                             image={coverUrl}
-                            tip={subTitle}
-                            onClick={() => handleAnimeClick(id)}
+                            onClick={() => handleTopicClick(id)}
                         />
                     );
                 })}
@@ -100,4 +82,4 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
     );
 };
 
-export default AnimeType;
+export default AnimeTopic;

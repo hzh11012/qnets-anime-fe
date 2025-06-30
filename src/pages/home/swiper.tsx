@@ -87,12 +87,7 @@ const SwiperItem: React.FC<SwiperItemProps> = ({
 const Swiper: React.FC<SwiperProps> = ({ list, onClick, className }) => {
     if (!list?.length) return null;
 
-    const handleClick = useCallback(
-        (id: string) => {
-            onClick(id);
-        },
-        [onClick]
-    );
+    const handleClick = useCallback((id: string) => onClick(id), [onClick]);
 
     const plugin = useRef(
         Autoplay({
