@@ -1,0 +1,99 @@
+import React, { useCallback, useEffect, useRef } from 'react';
+import { AnimeCard, AnimeCardSkeleton } from '@/components/custom/anime-card';
+import { cn } from '@/lib/utils';
+import { AnimeYouLike } from '@/types';
+
+interface AnimeGuessProps {
+    title: string;
+    list: AnimeYouLike[];
+    total: number;
+    loading: boolean;
+    onLoad: () => void;
+    onAnimeClick: (id: string) => void;
+    className?: string;
+}
+
+const AnimeGuessSkeleton: React.FC<{ count?: number }> = ({ count = 5 }) => (
+    <>
+        {[...Array(count)].map((_, index) => (
+            <AnimeCardSkeleton type="horizontal" key={index} />
+        ))}
+    </>
+);
+
+const AnimeGuess: React.FC<AnimeGuessProps> = ({
+    title,
+    list,
+    className,
+    loading,
+    total,
+    onLoad,
+    onAnimeClick
+}) => {
+    const loader = useRef<HTMLDivElement | null>(null);
+
+    const handleAnimeClick = useCallback((id: string) => onAnimeClick(id), []);
+
+    const getSubTitle = useCallback((item: AnimeYouLike) => {
+        const { videoCount, status } = item;
+
+        if (!videoCount) return '即将开播';
+
+        if (status === 1) {
+            return `更新至第${videoCount}话`;
+        } else if (status === 2) {
+            return `全${videoCount}话`;
+        }
+
+        return '即将开播';
+    }, []);
+
+    // 监听下拉到底
+    useEffect(() => {
+        if (!loader.current) return;
+        const observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && !loading && list.length < total) {
+                onLoad();
+            }
+        });
+        observer.observe(loader.current);
+        return () => observer.disconnect();
+    }, [loading, list.length, total]);
+
+    if (!list?.length) return null;
+
+    return (
+        <div className={cn('select-none transition-[margin]', className)}>
+            <div className={cn('flex items-center mb-4')}>
+                <div className={cn('font-bold text-md')}>{title}</div>
+            </div>
+            <div
+                className={cn(
+                    'grid gap-4 grid-cols-5 text-sm',
+                    'md:gap-6',
+                    'max-[1500px]:grid-cols-4',
+                    'max-[1140px]:grid-cols-3',
+                    'max-[855px]:grid-cols-2',
+                    'max-md:grid-cols-2'
+                )}
+            >
+                {list.map(item => (
+                    <AnimeCard
+                        key={item.id}
+                        type="horizontal"
+                        title={item.name}
+                        remark={item.remark}
+                        tip={getSubTitle(item)}
+                        image={item.bannerUrl}
+                        onClick={() => handleAnimeClick(item.videoId)}
+                    />
+                ))}
+                {loading && <AnimeGuessSkeleton />}
+                {/* 触底加载的锚点 */}
+                <div ref={loader} style={{ height: 1 }} />
+            </div>
+        </div>
+    );
+};
+
+export default AnimeGuess;

@@ -42,4 +42,27 @@ const getResponsiveClasses = (
     return cn(baseClasses, ...conditionalClasses);
 };
 
-export { cn, formatDate, formateNumber, getResponsiveClasses };
+const formatVideoTime = (time: number) => {
+    // 处理无效输入，确保为非负数
+    const _time = Math.max(0, Math.floor(time));
+
+    // 计算时间分量
+    const hours = Math.floor(_time / 3600);
+    const minutes = Math.floor((_time % 3600) / 60);
+    const seconds = _time % 60;
+
+    // 格式化所有部分为两位数
+    const formattedSeconds = seconds.toString().padStart(2, '0');
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+
+    if (hours > 0) {
+        // 格式化小时为两位数
+        const formattedHours = hours.toString().padStart(2, '0');
+        return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+    } else {
+        // 分钟部分也补零
+        return `${formattedMinutes}:${formattedSeconds}`;
+    }
+};
+
+export { cn, formatDate, formateNumber, getResponsiveClasses, formatVideoTime };

@@ -1,21 +1,19 @@
 import React, { useMemo, useCallback } from 'react';
 import { AnimeCard } from '@/components/custom/anime-card';
 import { Button } from '@/components/ui/button';
-import { cn, getResponsiveClasses } from '@/lib/utils';
-import { AnimeOption } from '@/types';
+import { cn, formatVideoTime, getResponsiveClasses } from '@/lib/utils';
+import { CollectionOption } from '@/types';
 import { ChevronRight } from 'lucide-react';
 
-interface AnimeTypeProps {
-    type?: 'horizontal' | 'vertical';
+interface AnimeCollectionProps {
     title: string;
-    list: AnimeOption[];
+    list: CollectionOption[];
     onAnimeClick: (id: string) => void;
     onAllClick: () => void;
     className?: string;
 }
 
-const AnimeType: React.FC<AnimeTypeProps> = ({
-    type = 'vertical',
+const AnimeCollection: React.FC<AnimeCollectionProps> = ({
     title,
     list,
     className,
@@ -25,16 +23,16 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
     if (!list?.length) return null;
 
     const { maxCount, displayList } = useMemo(() => {
-        const maxCount = type === 'vertical' ? 7 : 5;
+        const maxCount = 5;
         const displayList = list.slice(0, maxCount);
         return { maxCount, displayList };
-    }, [type, list]);
+    }, [list]);
 
     const handleAnimeClick = useCallback((id: string) => onAnimeClick(id), []);
 
     const handleAllClick = useCallback(() => onAllClick(), []);
 
-    const getSubTitle = useCallback((item: AnimeOption) => {
+    const getTip = useCallback((item: CollectionOption) => {
         const { videoCount, status } = item;
 
         if (!videoCount) return '即将开播';
@@ -46,6 +44,14 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
         }
 
         return '即将开播';
+    }, []);
+
+    const getRemark = useCallback((item: CollectionOption) => {
+        const { episode, time } = item;
+
+        if (!episode) return '尚未观看';
+        const _time = formatVideoTime(time);
+        return `看到第${episode}话 ${_time}`;
     }, []);
 
     return (
@@ -64,11 +70,7 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
             <div
                 className={cn(
                     'grid gap-4 text-sm',
-                    'md:flex md:items-center md:gap-6',
-                    {
-                        'grid-cols-3': type === 'vertical',
-                        'grid-cols-2': type === 'horizontal'
-                    },
+                    'md:flex md:items-center md:gap-6 grid-cols-2',
                     {
                         '[&>*:nth-last-child(1)]:max-md:hidden':
                             displayList?.length === maxCount
@@ -76,18 +78,22 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
                 )}
             >
                 {displayList.map((item, index) => {
-                    const { id, name, coverUrl, remark, videoId } = item;
-                    const subTitle = getSubTitle(item);
+                    const { videoId, name, bannerUrl } = item;
+                    const tip = getTip(item);
+                    const remark = getRemark(item);
 
                     return (
                         <AnimeCard
-                            type={type}
-                            key={id}
-                            className={getResponsiveClasses(index, type)}
+                            key={videoId + index}
+                            type="horizontal"
+                            className={getResponsiveClasses(
+                                index,
+                                'horizontal'
+                            )}
                             title={name}
+                            tip={tip}
                             remark={remark}
-                            image={coverUrl}
-                            tip={subTitle}
+                            image={bannerUrl}
                             onClick={() => handleAnimeClick(videoId)}
                         />
                     );
@@ -97,4 +103,4 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
     );
 };
 
-export default AnimeType;
+export default AnimeCollection;

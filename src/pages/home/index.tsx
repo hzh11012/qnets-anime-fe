@@ -1,16 +1,22 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import Swiper from '@/pages/home/swiper';
 import { useRequest } from 'ahooks';
-import { getBannerOptions } from '@/apis/banner';
+import {
+    getTopicOptions,
+    getAnimeOptions,
+    getBannerOptions,
+    getCollectionOptions,
+    guessAnimeYouLike
+} from '@/apis';
 import { useHomeStore, useUserStore } from '@/store';
 import { cn, getResponsiveClasses } from '@/lib/utils';
-import { getAnimeOptions } from '@/apis/anime';
 import { useNavigate } from 'react-router-dom';
 import AnimeType from '@/pages/home/anime-type';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnimeCardSkeleton } from '@/components/custom/anime-card';
-import { getTopicOptions } from '@/apis/topic';
-import AnimeTopic from './anime-topic';
+import AnimeTopic from '@/pages/home/anime-topic';
+import AnimeCollection from '@/pages/home/anime-collection';
+import AnimeGuess from '@/pages/home/anime-guess';
 
 const ANIME_TYPES_MAP: Record<number, string> = {
     0: '剧场版推荐',
@@ -76,6 +82,14 @@ const Home: React.FC = () => {
     const setAnimeTypeList = useHomeStore(state => state.setAnimeTypeList);
     const topicList = useHomeStore(state => state.topicList);
     const setTopicList = useHomeStore(state => state.setTopicList);
+    const collectionList = useHomeStore(state => state.collectionList);
+    const setCollectionList = useHomeStore(state => state.setCollectionList);
+    const guessList = useHomeStore(state => state.guessList);
+    const setGuessList = useHomeStore(state => state.setGuessList);
+    const guessPage = useHomeStore(state => state.guessPage);
+    const setGuessPage = useHomeStore(state => state.setGuessPage);
+    const guessTotal = useHomeStore(state => state.guessTotal);
+    const setGuessTotal = useHomeStore(state => state.setGuessTotal);
 
     const isHentai = useUserStore(state => state.isHentai);
 
@@ -85,15 +99,26 @@ const Home: React.FC = () => {
     );
 
     const initData = useCallback(async () => {
-        const [bannerData, topicData, ...animeTypeList] = await Promise.all([
+        const [
+            bannerData,
+            topicData,
+            CollectionData,
+            guessData,
+            ...animeTypeList
+        ] = await Promise.all([
             getBannerOptions(),
             getTopicOptions(),
+            getCollectionOptions(),
+            guessAnimeYouLike({ page: guessPage, pageSize: 5 }),
             ...ANIME_TYPES.map(type => getAnimeOptions({ type }))
         ]);
 
         return {
             bannerList: bannerData.data.rows,
             topicList: topicData.data.rows,
+            collectionList: CollectionData.data.rows,
+            guessList: guessData.data.rows,
+            guessTotal: guessData.data.total,
             animeTypeList: animeTypeList.map(item => item.data.rows)
         };
     }, [ANIME_TYPES]);
@@ -101,16 +126,51 @@ const Home: React.FC = () => {
     useRequest(initData, {
         debounceWait: 250,
         onSuccess: data => {
-            const { bannerList, topicList, animeTypeList } = data;
+            const {
+                bannerList,
+                topicList,
+                collectionList,
+                guessList,
+                guessTotal,
+                animeTypeList
+            } = data;
             setBannerList(bannerList);
             setTopicList(topicList);
+            setCollectionList(collectionList);
+            setGuessList(guessList);
+            setGuessTotal(guessTotal);
             setAnimeTypeList(animeTypeList);
         },
         onFinally: () => setLoading(false)
     });
 
+    // 猜你喜欢下拉加载
+    const {
+        run,
+        loading: loadingMore,
+        cancel
+    } = useRequest(guessAnimeYouLike, {
+        manual: true,
+        debounceWait: 250,
+        onSuccess: data => {
+            const { rows, total } = data.data;
+            const result = guessList.concat(rows);
+            setGuessTotal(total);
+            setGuessList(result);
+        }
+    });
+
+    useEffect(() => {
+        return () => {
+            setGuessPage(1);
+            setGuessTotal(0);
+            setGuessList([]);
+            cancel();
+        };
+    }, [cancel]);
+
     const handleAnimeClick = useCallback((id: string) => {
-        navigate(`anime/${id}`);
+        id && navigate(`anime/${id}`);
     }, []);
 
     const handleTopicClick = useCallback((id: string) => {
@@ -124,6 +184,15 @@ const Home: React.FC = () => {
     const handleTopicAllClick = useCallback(() => {
         navigate('topic');
     }, []);
+
+    const handleCollectionAllClick = useCallback(() => {
+        navigate('mine');
+    }, []);
+
+    const handleLoadGuess = () => {
+        run({ page: guessPage + 1, pageSize: 5 });
+        setGuessPage(guessPage + 1);
+    };
 
     const renderAnimeTypes = useMemo(
         () =>
@@ -150,13 +219,29 @@ const Home: React.FC = () => {
         >
             <Swiper list={bannerList} onClick={handleAnimeClick} />
 
+            <AnimeCollection
+                title="我的追番"
+                list={collectionList}
+                onAnimeClick={handleAnimeClick}
+                onAllClick={() => handleTopicAllClick()}
+            />
+
             {renderAnimeTypes}
 
             <AnimeTopic
                 title="专题推荐"
                 list={topicList}
                 onTopicClick={handleTopicClick}
-                onAllClick={() => handleTopicAllClick()}
+                onAllClick={() => handleCollectionAllClick()}
+            />
+
+            <AnimeGuess
+                title="猜你喜欢"
+                loading={loadingMore}
+                list={guessList}
+                total={guessTotal}
+                onLoad={handleLoadGuess}
+                onAnimeClick={handleAnimeClick}
             />
         </div>
     );

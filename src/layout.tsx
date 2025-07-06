@@ -22,6 +22,16 @@ const Layout: React.FC = () => {
                     >
                         <Outlet />
                     </HeaderInset>
+                    {/** 这里暴露给tailwind的动态css 否则会不生效 */}
+                    <div
+                        className={cn(
+                            'max-[855px]:hidden',
+                            'max-[1100px]:hidden',
+                            'max-[1140px]:hidden',
+                            'max-[1300px]:hidden',
+                            'max-[1500px]:hidden'
+                        )}
+                    ></div>
                     <AppFooter />
                 </HeaderProvider>
             </SidebarInset>

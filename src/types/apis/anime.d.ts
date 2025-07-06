@@ -5,6 +5,7 @@ interface AnimeOption {
     coverUrl: string;
     status: number;
     videoCount: number;
+    videoId: string;
 }
 
 interface AnimeOptionsRes {
@@ -16,4 +17,32 @@ interface AnimeOptionsParams {
     type: string;
 }
 
-export { AnimeOptionsRes, AnimeOption, AnimeOptionsParams };
+interface AnimeYouLike {
+    id: string;
+    name: string;
+    remark: string;
+    bannerUrl: string;
+    status: number;
+    type: number;
+    videoCount: number;
+    videoId: string;
+}
+
+interface AnimeYouLikeRes {
+    total: number;
+    rows: AnimeYouLike[];
+}
+
+interface AnimeYouLikeParams {
+    page?: number;
+    pageSize?: number;
+}
+
+export {
+    AnimeOptionsRes,
+    AnimeOption,
+    AnimeOptionsParams,
+    AnimeYouLikeRes,
+    AnimeYouLike,
+    AnimeYouLikeParams
+};
