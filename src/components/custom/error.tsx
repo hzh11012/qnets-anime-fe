@@ -2,7 +2,13 @@ import { CircleX } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
-const Error = ({ className }: { className?: string }) => {
+const Error = ({
+    className,
+    text = '服务错误'
+}: {
+    className?: string;
+    text?: string;
+}) => {
     return (
         <div
             className={cn(
@@ -11,7 +17,7 @@ const Error = ({ className }: { className?: string }) => {
             )}
         >
             <CircleX className={cn('size-5')} />
-            <p className={cn('ml-2')}>服务错误</p>
+            <p className={cn('ml-2')}>{text}</p>
         </div>
     );
 };

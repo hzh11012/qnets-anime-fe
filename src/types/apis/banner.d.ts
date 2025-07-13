@@ -4,6 +4,7 @@ interface BannerOption {
     bannerUrl: string;
     status: number;
     videoCount: number;
+    videoId?: string;
 }
 
 interface BannerOptionsRes {

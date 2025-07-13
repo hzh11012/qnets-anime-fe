@@ -28,17 +28,14 @@ const AnimeTopic: React.FC<AnimeTopicProps> = ({
         return { maxCount, displayList };
     }, [list]);
 
-    const handleTopicClick = useCallback(
-        (id: string) => onTopicClick(id),
-        [onTopicClick]
-    );
+    const handleTopicClick = (id: string) => onTopicClick(id);
 
-    const handleAllClick = useCallback(() => onAllClick(), [onAllClick]);
+    const handleAllClick = () => onAllClick();
 
     return (
         <div className={cn('select-none transition-[margin]', className)}>
             <div className={cn('flex items-center justify-between mb-4')}>
-                <div className={cn('font-bold text-md')}>{title}</div>
+                <div className={cn('font-bold text-base')}>{title}</div>
                 <Button
                     variant="outline"
                     className={cn('gap-1')}

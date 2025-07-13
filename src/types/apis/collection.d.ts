@@ -1,5 +1,5 @@
 interface CollectionOption {
-    videoId: string;
+    videoId?: string;
     name: string;
     time: number;
     bannerUrl: string;

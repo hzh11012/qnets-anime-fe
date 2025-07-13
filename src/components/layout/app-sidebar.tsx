@@ -23,7 +23,7 @@ const AppSidebar: React.FC = () => {
     const navigate = useNavigate();
 
     return (
-        <Sidebar>
+        <Sidebar className={cn('left-0')}>
             <SidebarHeader
                 className={cn('h-[4.25rem] items-center justify-center')}
             >

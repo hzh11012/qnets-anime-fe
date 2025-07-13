@@ -9,20 +9,20 @@ import { cn } from '@/lib/utils';
 import { Play } from 'lucide-react';
 import { BannerOption } from '@/types';
 
-interface SwiperProps {
+interface AnimeBannerProps {
     list: BannerOption[];
     onClick: (id: string) => void;
     className?: string;
 }
 
-interface SwiperItemProps {
+interface AnimeBannerItemProps {
     title: string;
     subTitle?: string;
     image: string;
     onClick: () => void;
 }
 
-const SwiperItem: React.FC<SwiperItemProps> = ({
+const AnimeBannerItem: React.FC<AnimeBannerItemProps> = ({
     title,
     subTitle,
     image,
@@ -84,10 +84,28 @@ const SwiperItem: React.FC<SwiperItemProps> = ({
     );
 };
 
-const Swiper: React.FC<SwiperProps> = ({ list, onClick, className }) => {
+const AnimeBanner: React.FC<AnimeBannerProps> = ({
+    list,
+    onClick,
+    className
+}) => {
     if (!list?.length) return null;
 
-    const handleClick = useCallback((id: string) => onClick(id), [onClick]);
+    const handleClick = (id: string) => onClick(id);
+
+    const getSubTitle = useCallback((item: BannerOption) => {
+        const { videoCount, status } = item;
+
+        if (!videoCount) return '即将开播';
+
+        if (status === 1) {
+            return `更新至第${videoCount}话`;
+        } else if (status === 2) {
+            return `全${videoCount}话`;
+        }
+
+        return '即将开播';
+    }, []);
 
     const plugin = useRef(
         Autoplay({
@@ -99,33 +117,19 @@ const Swiper: React.FC<SwiperProps> = ({ list, onClick, className }) => {
 
     const carouselItems = useMemo(() => {
         return list.map((item, index) => {
-            const { id, name, bannerUrl, status, videoCount } = item;
-
-            // 优化副标题逻辑
-            const getSubTitle = () => {
-                if (!videoCount) return '即将开播';
-
-                switch (status) {
-                    case 1:
-                        return `第${videoCount}话`;
-                    case 2:
-                        return `全${videoCount}话`;
-                    default:
-                        return '即将开播';
-                }
-            };
+            const { id, name, bannerUrl, videoId = '' } = item;
 
             return (
-                <SwiperItem
+                <AnimeBannerItem
                     key={`${id}-${index}`}
                     title={name}
-                    subTitle={getSubTitle()}
+                    subTitle={getSubTitle(item)}
                     image={bannerUrl}
-                    onClick={() => handleClick(id)}
+                    onClick={() => handleClick(videoId)}
                 />
             );
         });
-    }, [list, handleClick]);
+    }, [list]);
 
     return (
         <Carousel
@@ -140,4 +144,4 @@ const Swiper: React.FC<SwiperProps> = ({ list, onClick, className }) => {
     );
 };
 
-export default Swiper;
+export default AnimeBanner;

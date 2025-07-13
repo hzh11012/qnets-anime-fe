@@ -1,14 +1,14 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { AnimeCard, AnimeCardSkeleton } from '@/components/custom/anime-card';
 import { cn } from '@/lib/utils';
 import { AnimeYouLike } from '@/types';
+import { useInView } from 'react-intersection-observer';
 
 interface AnimeGuessProps {
     title: string;
     list: AnimeYouLike[];
-    total: number;
     loading: boolean;
-    onLoad: () => void;
+    onLoadMore: () => void;
     onAnimeClick: (id: string) => void;
     className?: string;
 }
@@ -26,13 +26,19 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
     list,
     className,
     loading,
-    total,
-    onLoad,
+    onLoadMore,
     onAnimeClick
 }) => {
-    const loader = useRef<HTMLDivElement | null>(null);
+    const { ref } = useInView({
+        threshold: 0,
+        onChange: inView => {
+            if (inView && !loading) {
+                onLoadMore();
+            }
+        }
+    });
 
-    const handleAnimeClick = useCallback((id: string) => onAnimeClick(id), []);
+    const handleAnimeClick = (id: string) => onAnimeClick(id);
 
     const getSubTitle = useCallback((item: AnimeYouLike) => {
         const { videoCount, status } = item;
@@ -48,24 +54,12 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
         return '即将开播';
     }, []);
 
-    // 监听下拉到底
-    useEffect(() => {
-        if (!loader.current) return;
-        const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && !loading && list.length < total) {
-                onLoad();
-            }
-        });
-        observer.observe(loader.current);
-        return () => observer.disconnect();
-    }, [loading, list.length, total]);
-
-    if (!list?.length) return null;
+    if (!list.length) return null;
 
     return (
         <div className={cn('select-none transition-[margin]', className)}>
             <div className={cn('flex items-center mb-4')}>
-                <div className={cn('font-bold text-md')}>{title}</div>
+                <div className={cn('font-bold text-base')}>{title}</div>
             </div>
             <div
                 className={cn(
@@ -85,12 +79,12 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
                         remark={item.remark}
                         tip={getSubTitle(item)}
                         image={item.bannerUrl}
-                        onClick={() => handleAnimeClick(item.videoId)}
+                        onClick={() => handleAnimeClick(item.videoId || '')}
                     />
                 ))}
                 {loading && <AnimeGuessSkeleton />}
                 {/* 触底加载的锚点 */}
-                <div ref={loader} style={{ height: 1 }} />
+                <div ref={ref} style={{ height: 0 }} />
             </div>
         </div>
     );

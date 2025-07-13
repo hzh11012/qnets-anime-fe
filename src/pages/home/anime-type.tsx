@@ -30,9 +30,9 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
         return { maxCount, displayList };
     }, [type, list]);
 
-    const handleAnimeClick = useCallback((id: string) => onAnimeClick(id), []);
+    const handleAnimeClick = (id: string) => onAnimeClick(id);
 
-    const handleAllClick = useCallback(() => onAllClick(), []);
+    const handleAllClick = () => onAllClick();
 
     const getSubTitle = useCallback((item: AnimeOption) => {
         const { videoCount, status } = item;
@@ -51,7 +51,7 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
     return (
         <div className={cn('select-none transition-[margin]', className)}>
             <div className={cn('flex items-center justify-between mb-4')}>
-                <div className={cn('font-bold text-md')}>{title}</div>
+                <div className={cn('font-bold text-base')}>{title}</div>
                 <Button
                     variant="outline"
                     className={cn('gap-1')}
@@ -76,7 +76,7 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
                 )}
             >
                 {displayList.map((item, index) => {
-                    const { id, name, coverUrl, remark, videoId } = item;
+                    const { id, name, coverUrl, remark, videoId = '' } = item;
                     const subTitle = getSubTitle(item);
 
                     return (

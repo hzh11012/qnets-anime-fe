@@ -1,13 +1,5 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import Swiper from '@/pages/home/swiper';
-import { useRequest } from 'ahooks';
-import {
-    getTopicOptions,
-    getAnimeOptions,
-    getBannerOptions,
-    getCollectionOptions,
-    guessAnimeYouLike
-} from '@/apis';
+import React, { useEffect, useMemo } from 'react';
+import AnimeBanner from '@/pages/home/anime-banner';
 import { useHomeStore, useUserStore } from '@/store';
 import { cn, getResponsiveClasses } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -74,124 +66,44 @@ const HomeSkeleton: React.FC = () => {
 const Home: React.FC = () => {
     const navigate = useNavigate();
 
-    const loading = useHomeStore(state => state.loading);
-    const setLoading = useHomeStore(state => state.setLoading);
-    const bannerList = useHomeStore(state => state.bannerList);
-    const setBannerList = useHomeStore(state => state.setBannerList);
-    const animeTypeList = useHomeStore(state => state.animeTypeList);
-    const setAnimeTypeList = useHomeStore(state => state.setAnimeTypeList);
-    const topicList = useHomeStore(state => state.topicList);
-    const setTopicList = useHomeStore(state => state.setTopicList);
-    const collectionList = useHomeStore(state => state.collectionList);
-    const setCollectionList = useHomeStore(state => state.setCollectionList);
-    const guessList = useHomeStore(state => state.guessList);
-    const setGuessList = useHomeStore(state => state.setGuessList);
-    const guessPage = useHomeStore(state => state.guessPage);
-    const setGuessPage = useHomeStore(state => state.setGuessPage);
-    const guessTotal = useHomeStore(state => state.guessTotal);
-    const setGuessTotal = useHomeStore(state => state.setGuessTotal);
+    const initialLoading = useHomeStore(state => state.initialLoading);
+    const fetchHomeData = useHomeStore(state => state.fetchHomeData);
+    const banners = useHomeStore(state => state.banners);
+    const collections = useHomeStore(state => state.collections);
+    const topics = useHomeStore(state => state.topics);
+    const animeTypes = useHomeStore(state => state.animeTypes);
+
+    const recommended = useHomeStore(state => state.recommended);
+    const loadMore = useHomeStore(state => state.loadMore);
 
     const isHentai = useUserStore(state => state.isHentai);
-
     const ANIME_TYPES = useMemo(
         () => (isHentai ? ALL_ANIME_TYPES : NORMAL_ANIME_TYPES),
         [isHentai]
     );
 
-    const initData = useCallback(async () => {
-        const [
-            bannerData,
-            topicData,
-            CollectionData,
-            guessData,
-            ...animeTypeList
-        ] = await Promise.all([
-            getBannerOptions(),
-            getTopicOptions(),
-            getCollectionOptions(),
-            guessAnimeYouLike({ page: guessPage, pageSize: 5 }),
-            ...ANIME_TYPES.map(type => getAnimeOptions({ type }))
-        ]);
-
-        return {
-            bannerList: bannerData.data.rows,
-            topicList: topicData.data.rows,
-            collectionList: CollectionData.data.rows,
-            guessList: guessData.data.rows,
-            guessTotal: guessData.data.total,
-            animeTypeList: animeTypeList.map(item => item.data.rows)
-        };
+    useEffect(() => {
+        fetchHomeData(ANIME_TYPES);
     }, [ANIME_TYPES]);
 
-    useRequest(initData, {
-        debounceWait: 250,
-        onSuccess: data => {
-            const {
-                bannerList,
-                topicList,
-                collectionList,
-                guessList,
-                guessTotal,
-                animeTypeList
-            } = data;
-            setBannerList(bannerList);
-            setTopicList(topicList);
-            setCollectionList(collectionList);
-            setGuessList(guessList);
-            setGuessTotal(guessTotal);
-            setAnimeTypeList(animeTypeList);
-        },
-        onFinally: () => setLoading(false)
-    });
-
-    // 猜你喜欢下拉加载
-    const {
-        run,
-        loading: loadingMore,
-        cancel
-    } = useRequest(guessAnimeYouLike, {
-        manual: true,
-        debounceWait: 250,
-        onSuccess: data => {
-            const { rows, total } = data.data;
-            const result = guessList.concat(rows);
-            setGuessTotal(total);
-            setGuessList(result);
-        }
-    });
-
-    useEffect(() => {
-        return () => {
-            setGuessPage(1);
-            setGuessTotal(0);
-            setGuessList([]);
-            cancel();
-        };
-    }, [cancel]);
-
-    const handleAnimeClick = useCallback((id: string) => {
+    const handleAnimeClick = (id: string) => {
         id && navigate(`anime/${id}`);
-    }, []);
+    };
 
-    const handleTopicClick = useCallback((id: string) => {
+    const handleTopicClick = (id: string) => {
         navigate(`topic/${id}`);
-    }, []);
+    };
 
-    const handleAllClick = useCallback((type: number) => {
+    const handleAllClick = (type: number) => {
         navigate(`search?type=${type}`);
-    }, []);
+    };
 
-    const handleTopicAllClick = useCallback(() => {
+    const handleTopicAllClick = () => {
         navigate('topic');
-    }, []);
+    };
 
-    const handleCollectionAllClick = useCallback(() => {
+    const handleCollectionAllClick = () => {
         navigate('mine');
-    }, []);
-
-    const handleLoadGuess = () => {
-        run({ page: guessPage + 1, pageSize: 5 });
-        setGuessPage(guessPage + 1);
     };
 
     const renderAnimeTypes = useMemo(
@@ -200,15 +112,15 @@ const Home: React.FC = () => {
                 <AnimeType
                     key={type}
                     title={ANIME_TYPES_MAP[index]}
-                    list={animeTypeList[index]}
+                    list={animeTypes[index]}
                     onAnimeClick={handleAnimeClick}
                     onAllClick={() => handleAllClick(index)}
                 />
             )),
-        [ANIME_TYPES, animeTypeList, handleAnimeClick, handleAllClick]
+        [ANIME_TYPES, animeTypes]
     );
 
-    if (loading) return <HomeSkeleton />;
+    if (initialLoading) return <HomeSkeleton />;
 
     return (
         <div
@@ -217,11 +129,11 @@ const Home: React.FC = () => {
                 'transition-[margin]'
             )}
         >
-            <Swiper list={bannerList} onClick={handleAnimeClick} />
+            <AnimeBanner list={banners} onClick={handleAnimeClick} />
 
             <AnimeCollection
                 title="我的追番"
-                list={collectionList}
+                list={collections}
                 onAnimeClick={handleAnimeClick}
                 onAllClick={() => handleTopicAllClick()}
             />
@@ -230,17 +142,16 @@ const Home: React.FC = () => {
 
             <AnimeTopic
                 title="专题推荐"
-                list={topicList}
+                list={topics}
                 onTopicClick={handleTopicClick}
                 onAllClick={() => handleCollectionAllClick()}
             />
 
             <AnimeGuess
                 title="猜你喜欢"
-                loading={loadingMore}
-                list={guessList}
-                total={guessTotal}
-                onLoad={handleLoadGuess}
+                loading={recommended.loading}
+                list={recommended.list}
+                onLoadMore={loadMore}
                 onAnimeClick={handleAnimeClick}
             />
         </div>

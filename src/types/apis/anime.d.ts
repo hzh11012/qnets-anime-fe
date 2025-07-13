@@ -5,7 +5,7 @@ interface AnimeOption {
     coverUrl: string;
     status: number;
     videoCount: number;
-    videoId: string;
+    videoId?: string;
 }
 
 interface AnimeOptionsRes {
@@ -25,7 +25,7 @@ interface AnimeYouLike {
     status: number;
     type: number;
     videoCount: number;
-    videoId: string;
+    videoId?: string;
 }
 
 interface AnimeYouLikeRes {
@@ -38,11 +38,43 @@ interface AnimeYouLikeParams {
     pageSize?: number;
 }
 
+interface AnimeDetailParams {
+    id: string;
+}
+
+interface AnimeDetailRes {
+    anime: {
+        name: string;
+        status: number;
+        description: string;
+    };
+    avgRating: number;
+    collectionCount: number;
+    isRating: boolean;
+    playCount: number;
+    video: {
+        animeId: string;
+        title: string;
+        url: string;
+        episode: number;
+    };
+    videoCount: number;
+    isCollected: boolean;
+    time: number;
+    videoList: {
+        id: string;
+        episode: number;
+        title: string;
+    }[];
+}
+
 export {
     AnimeOptionsRes,
     AnimeOption,
     AnimeOptionsParams,
     AnimeYouLikeRes,
     AnimeYouLike,
-    AnimeYouLikeParams
+    AnimeYouLikeParams,
+    AnimeDetailRes,
+    AnimeDetailParams
 };

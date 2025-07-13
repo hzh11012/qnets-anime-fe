@@ -28,9 +28,9 @@ const AnimeCollection: React.FC<AnimeCollectionProps> = ({
         return { maxCount, displayList };
     }, [list]);
 
-    const handleAnimeClick = useCallback((id: string) => onAnimeClick(id), []);
+    const handleAnimeClick = (id: string) => onAnimeClick(id);
 
-    const handleAllClick = useCallback(() => onAllClick(), []);
+    const handleAllClick = () => onAllClick();
 
     const getTip = useCallback((item: CollectionOption) => {
         const { videoCount, status } = item;
@@ -57,7 +57,7 @@ const AnimeCollection: React.FC<AnimeCollectionProps> = ({
     return (
         <div className={cn('select-none transition-[margin]', className)}>
             <div className={cn('flex items-center justify-between mb-4')}>
-                <div className={cn('font-bold text-md')}>{title}</div>
+                <div className={cn('font-bold text-base')}>{title}</div>
                 <Button
                     variant="outline"
                     className={cn('gap-1')}
@@ -78,7 +78,7 @@ const AnimeCollection: React.FC<AnimeCollectionProps> = ({
                 )}
             >
                 {displayList.map((item, index) => {
-                    const { videoId, name, bannerUrl } = item;
+                    const { videoId = '', name, bannerUrl } = item;
                     const tip = getTip(item);
                     const remark = getRemark(item);
 

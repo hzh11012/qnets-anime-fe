@@ -7,25 +7,23 @@ import {
 } from '@/types';
 
 interface HomeState {
-    loading: boolean;
-    bannerList: BannerOption[];
-    animeTypeList: AnimeOption[][];
-    topicList: TopicOption[];
-    collectionList: CollectionOption[];
-    guessList: AnimeYouLike[];
-    guessPage: number;
-    guessTotal: number;
+    initialLoading: boolean;
+    banners: BannerOption[];
+    animeTypes: AnimeOption[][];
+    topics: TopicOption[];
+    collections: CollectionOption[];
+    recommended: {
+        list: AnimeYouLike[];
+        page: number;
+        pageSize: number;
+        total: number;
+        loading: boolean;
+    };
 }
 
 interface HomeAction {
-    setLoading: (value: HomeState['loading']) => void;
-    setBannerList: (value: HomeState['bannerList']) => void;
-    setAnimeTypeList: (value: HomeState['animeTypeList']) => void;
-    setTopicList: (value: HomeState['topicList']) => void;
-    setCollectionList: (value: HomeState['collectionList']) => void;
-    setGuessList: (value: HomeState['guessList']) => void;
-    setGuessPage: (value: HomeState['guessPage']) => void;
-    setGuessTotal: (value: HomeState['guessTotal']) => void;
+    fetchHomeData: (types: string[]) => Promise<void>;
+    loadMore: () => Promise<void>;
 }
 
 export { HomeState, HomeAction };
