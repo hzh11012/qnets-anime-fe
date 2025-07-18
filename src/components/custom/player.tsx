@@ -62,7 +62,7 @@ const Player: React.FC<PlayerProps> = ({
             quality: [],
             playbackRate: true,
             fullscreen: true,
-            fullscreenWeb: true,
+            fullscreenWeb: false,
             autoOrientation: true,
             aspectRatio: false,
             autoPlayback: false,
@@ -92,6 +92,7 @@ const Player: React.FC<PlayerProps> = ({
                     title: '画质'
                 }),
                 artplayerPluginDanmuku({
+                    width: 644,
                     emitter,
                     danmuku: () => {
                         return new Promise(resovle => {
@@ -136,7 +137,15 @@ const Player: React.FC<PlayerProps> = ({
         }
     }, [danmaku, emitter]);
 
-    return <div ref={ref} className={cn('size-full', className)}></div>;
+    return (
+        <div
+            ref={ref}
+            className={cn(
+                'w-full aspect-video mb-12 md:mb-0 md:aspect-auto md:h-[calc(100%-3rem)] lg:h-full',
+                className
+            )}
+        ></div>
+    );
 };
 
 export default Player;

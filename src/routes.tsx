@@ -1,4 +1,11 @@
-import { createBrowserRouter, Outlet, RouteObject } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import {
+    createBrowserRouter,
+    Outlet,
+    RouteObject,
+    useLocation,
+    useNavigationType
+} from 'react-router-dom';
 import Loading from '@/components/custom/loading';
 import Error from '@/components/custom/error';
 import { getUserInfo } from '@/apis';
@@ -38,6 +45,15 @@ const authLoader = async () => {
 };
 
 const WithLayout = ({ children }: { children: React.ReactNode }) => {
+    const location = useLocation();
+    const navigationType = useNavigationType();
+    useEffect(() => {
+        // 仅在新导航时重置滚动（排除回退/前进）
+        if (navigationType === 'PUSH') {
+            window.scrollTo(0, 0);
+        }
+    }, [location.pathname, navigationType]);
+
     const userInfo = useUserStore(state => state.userInfo);
     if (userInfo?.status === 0) {
         return <Exception code="43" msg="账号未开通/已封禁" />;
@@ -48,15 +64,22 @@ const WithLayout = ({ children }: { children: React.ReactNode }) => {
 // 视频 loader
 const videoLoader = async ({ params }: { params: { id: string } }) => {
     const id = params.id;
-
     const state = useAnimeStore.getState();
     const fetchAnimeDetailData = state.fetchAnimeDetailData;
     await fetchAnimeDetailData(id);
-
     return null;
 };
 
 const WithVideoLayout = ({ children }: { children: React.ReactNode }) => {
+    const location = useLocation();
+    const navigationType = useNavigationType();
+    useEffect(() => {
+        // 仅在新导航时重置滚动（排除回退/前进）
+        if (navigationType === 'PUSH') {
+            window.scrollTo(0, 0);
+        }
+    }, [location.pathname, navigationType]);
+
     const userInfo = useUserStore(state => state.userInfo);
     if (userInfo?.status === 0) {
         return <Exception code="43" msg="账号未开通/已封禁" />;

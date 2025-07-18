@@ -16,6 +16,7 @@ const AnimeEpisode: React.FC<AnimeEpisodeProps> = ({
 }) => {
     const { videoCount, video, videoList } = detail;
 
+    const containerRef = useRef<HTMLDivElement | null>(null);
     // 当前选中集数
     const currentEpisodeRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,11 +36,19 @@ const AnimeEpisode: React.FC<AnimeEpisodeProps> = ({
 
     // 滚动到当前集数
     useEffect(() => {
-        if (currentEpisodeRef.current) {
-            currentEpisodeRef.current.scrollIntoView({
-                behavior: 'auto',
-                block: 'center'
-            });
+        if (currentEpisodeRef.current && containerRef.current) {
+            const container = containerRef.current;
+            const item = currentEpisodeRef.current;
+            // 计算item相对于container的偏移
+            const itemRect = item.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+
+            // 当前item在容器内的top（可视区域内的偏移）
+            const offset = itemRect.top - containerRect.top;
+
+            // 让item居中
+            container.scrollTop +=
+                offset - container.clientHeight / 2 + item.clientHeight / 2;
         }
     }, [video.url, sort]);
 
@@ -78,7 +87,10 @@ const AnimeEpisode: React.FC<AnimeEpisodeProps> = ({
                     {sort === 'desc' && <ListStart size={22} />}
                 </div>
             </div>
-            <div className={cn('max-h-[13.75rem] overflow-auto outline-none')}>
+            <div
+                ref={containerRef}
+                className={cn('max-h-[13.75rem] overflow-auto outline-none')}
+            >
                 {list.map(item => {
                     const isCurrent = item.episode === video.episode;
                     return (

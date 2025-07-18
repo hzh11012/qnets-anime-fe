@@ -94,6 +94,7 @@ const Anime: React.FC = () => {
     return (
         <SidebarProvider
             style={{ '--sidebar-width': SIDEBAR_WIDTH } as React.CSSProperties}
+            className={cn('flex-col md:flex-row')}
         >
             <SidebarInset className={cn('bg-black')}>
                 <Player
@@ -105,8 +106,10 @@ const Anime: React.FC = () => {
                 />
             </SidebarInset>
             <Sidebar
-                wrapperClassName={cn('hidden md:hidden xl:block')}
-                className={cn('right-0 flex')}
+                wrapperClassName={cn('block')}
+                className={cn(
+                    'right-0 flex relative md:fixed w-full md:w-(--sidebar-width)'
+                )}
                 innerClassName={cn('bg-background')}
             >
                 <Tabs defaultValue="description" className={cn('size-full')}>
@@ -168,7 +171,7 @@ const Anime: React.FC = () => {
                         </DropdownMenu>
                     </TabsList>
                     <TabsContent
-                        className={cn('py-5 overflow-auto')}
+                        className={cn('py-5 md:overflow-auto')}
                         value="description"
                     >
                         <div className={cn('px-5')}>

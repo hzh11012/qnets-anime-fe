@@ -37,3 +37,12 @@ body,
 .art-icon-loading img {
     vertical-align: unset !important;
 }
+
+.art-video-player > .artplayer-plugin-danmuku {
+    padding: 0 20px !important;
+}
+.art-video-player .art-controls-center .apd-emitter {
+    flex: 1;
+    max-width: 260px;
+    width: unset;
+}
