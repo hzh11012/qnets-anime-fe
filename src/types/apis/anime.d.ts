@@ -50,7 +50,7 @@ interface AnimeDetailRes {
     };
     avgRating: number;
     collectionCount: number;
-    isRating: boolean;
+    rating?: number;
     playCount: number;
     video: {
         animeId: string;
@@ -68,6 +68,26 @@ interface AnimeDetailRes {
     }[];
 }
 
+interface AnimeRecommendParams {
+    id: string;
+}
+
+interface AnimeRecommend {
+    name: string;
+    coverUrl: string;
+    status: number;
+    videoCount: number;
+    playCount: number;
+    collectionCount: number;
+    avgRating: number;
+    videoId?: string;
+}
+
+interface AnimeRecommendRes {
+    total: number;
+    rows: AnimeRecommend[];
+}
+
 export {
     AnimeOptionsRes,
     AnimeOption,
@@ -76,5 +96,8 @@ export {
     AnimeYouLike,
     AnimeYouLikeParams,
     AnimeDetailRes,
-    AnimeDetailParams
+    AnimeDetailParams,
+    AnimeRecommendRes,
+    AnimeRecommend,
+    AnimeRecommendParams
 };

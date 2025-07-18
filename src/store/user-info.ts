@@ -4,7 +4,7 @@ import type { UserState, UserAction } from '@/types';
 
 const useUserStore = create(
     persist<UserState & UserAction>(
-        set => ({
+        () => ({
             userInfo: {
                 id: '',
                 email: '',
@@ -15,13 +15,9 @@ const useUserStore = create(
                 createdAt: '',
                 updatedAt: ''
             },
-            isHentai: false,
-            setUserInfo: value => {
-                set(() => ({ userInfo: value }));
-            },
-            setIsHentai: value => {
-                set(() => ({ isHentai: value }));
-            }
+            isAllowViewHentai: false,
+            isAllowSendDanmaku: false,
+            isAllowSendComment: false
         }),
         {
             name: 'user-store',

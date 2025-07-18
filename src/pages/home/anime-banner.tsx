@@ -7,7 +7,7 @@ import {
 import Autoplay from 'embla-carousel-autoplay';
 import { cn } from '@/lib/utils';
 import { Play } from 'lucide-react';
-import { BannerOption } from '@/types';
+import type { BannerOption } from '@/types';
 
 interface AnimeBannerProps {
     list: BannerOption[];

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { AnimeCard, AnimeCardSkeleton } from '@/components/custom/anime-card';
 import { cn } from '@/lib/utils';
-import { AnimeYouLike } from '@/types';
+import type { AnimeYouLike } from '@/types';
 import { useInView } from 'react-intersection-observer';
 
 interface AnimeGuessProps {

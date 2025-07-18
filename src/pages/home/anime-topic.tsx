@@ -1,8 +1,8 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { AnimeCard } from '@/components/custom/anime-card';
 import { Button } from '@/components/ui/button';
 import { cn, getResponsiveClasses } from '@/lib/utils';
-import { TopicOption } from '@/types';
+import type { TopicOption } from '@/types';
 import { ChevronRight } from 'lucide-react';
 
 interface AnimeTopicProps {

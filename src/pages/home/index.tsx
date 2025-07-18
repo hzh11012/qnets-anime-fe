@@ -76,10 +76,10 @@ const Home: React.FC = () => {
     const recommended = useHomeStore(state => state.recommended);
     const loadMore = useHomeStore(state => state.loadMore);
 
-    const isHentai = useUserStore(state => state.isHentai);
+    const isAllowViewHentai = useUserStore(state => state.isAllowViewHentai);
     const ANIME_TYPES = useMemo(
-        () => (isHentai ? ALL_ANIME_TYPES : NORMAL_ANIME_TYPES),
-        [isHentai]
+        () => (isAllowViewHentai ? ALL_ANIME_TYPES : NORMAL_ANIME_TYPES),
+        [isAllowViewHentai]
     );
 
     useEffect(() => {

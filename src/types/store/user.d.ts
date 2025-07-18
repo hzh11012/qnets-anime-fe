@@ -2,12 +2,11 @@ import type { UserInfoRes } from '@/types';
 
 interface UserState {
     userInfo: UserInfoRes;
-    isHentai: boolean;
+    isAllowViewHentai: boolean;
+    isAllowSendDanmaku: boolean;
+    isAllowSendComment: boolean;
 }
 
-interface UserAction {
-    setUserInfo: (value: UserState['userInfo']) => void;
-    setIsHentai: (value: UserState['isHentai']) => void;
-}
+interface UserAction {}
 
 export { UserState, UserAction };

@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from 'react';
 import { AnimeCard } from '@/components/custom/anime-card';
 import { Button } from '@/components/ui/button';
 import { cn, formatVideoTime, getResponsiveClasses } from '@/lib/utils';
-import { CollectionOption } from '@/types';
+import type { CollectionOption } from '@/types';
 import { ChevronRight } from 'lucide-react';
 
 interface AnimeCollectionProps {

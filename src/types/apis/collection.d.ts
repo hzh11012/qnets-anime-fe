@@ -13,4 +13,17 @@ interface CollectionOptionsRes {
     rows: CollectionOption[];
 }
 
-export { CollectionOptionsRes, CollectionOption };
+interface CreateCollectionParams {
+    id: string;
+}
+
+interface CancelCollectionParams {
+    id: string;
+}
+
+export {
+    CollectionOptionsRes,
+    CollectionOption,
+    CreateCollectionParams,
+    CancelCollectionParams
+};
