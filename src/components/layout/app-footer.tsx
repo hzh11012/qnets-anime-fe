@@ -26,7 +26,7 @@ const AppFooter: React.FC = () => {
                         <Icon size={22} />
                         <span
                             className={cn(
-                                'transition-colors text-muted-foreground',
+                                'transition-colors duration-200 text-muted-foreground',
                                 { 'text-primary-foreground/70': isActive }
                             )}
                         >

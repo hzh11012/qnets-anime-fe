@@ -21,7 +21,7 @@ const AppHeader: React.FC = () => {
                     placeholder="搜索你感兴趣的动漫"
                     className={cn(
                         'absolute right-4 md:right-8 w-1/2 md:w-[18.625rem]',
-                        'transition-[width,right,color,background-color,border-color]',
+                        'transition-[width,right,color,background-color,border-color] duration-200',
                         'md:data-[focus=true]:right-[calc(50%-13.4375rem)] md:data-[focus=true]:w-[26.875rem]',
                         'md:data-[value=true]:right-[calc(50%-13.4375rem)] md:data-[value=true]:w-[26.875rem]'
                     )}

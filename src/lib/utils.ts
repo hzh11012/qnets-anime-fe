@@ -6,8 +6,8 @@ const cn = (...inputs: ClassValue[]) => {
     return twMerge(clsx(inputs));
 };
 
-const formatDate = (date: string) => {
-    return DateTime.fromISO(date).toFormat('DD tt');
+const formatDate = (date: string, format: string = 'DD tt') => {
+    return DateTime.fromISO(date).toFormat(format);
 };
 
 const formateNumber = (x: number) => {

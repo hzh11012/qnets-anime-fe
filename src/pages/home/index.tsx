@@ -22,7 +22,7 @@ const ALL_ANIME_TYPES = Object.keys(ANIME_TYPES_MAP);
 const NORMAL_ANIME_TYPES = ALL_ANIME_TYPES.slice(0, 4);
 
 const HomeSkeleton: React.FC = () => {
-    const baseContainerClasses = cn('mt-4 md:mt-8', 'transition-[margin]');
+    const baseContainerClasses = cn('mt-4 md:mt-8', 'transition-[margin] duration-200');
 
     const gridContainerClasses = cn(
         baseContainerClasses,
@@ -126,7 +126,7 @@ const Home: React.FC = () => {
         <div
             className={cn(
                 'flex flex-col gap-4 md:gap-8 my-4 md:my-8',
-                'transition-[margin]'
+                'transition-[margin] duration-200'
             )}
         >
             <AnimeBanner list={banners} onClick={handleAnimeClick} />

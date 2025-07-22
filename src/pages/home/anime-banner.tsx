@@ -41,14 +41,14 @@ const AnimeBannerItem: React.FC<AnimeBannerItemProps> = ({
                 <div
                     className={cn(
                         'absolute bg-neutral-800/80 flex items-center right-2 bottom-2 z-10 h-10 rounded-full',
-                        'transition-[right,bottom,height]',
+                        'transition-[right,bottom,height] duration-200',
                         'md:right-8 md:bottom-8 md:h-12'
                     )}
                 >
                     <div
                         className={cn(
                             'flex items-center justify-center size-9 rounded-full absolute left-0.5 cursor-pointer bg-primary/80',
-                            'transition-[scale]',
+                            'transition-[scale] duration-200',
                             'md:size-11',
                             'hover:scale-120'
                         )}
@@ -59,7 +59,7 @@ const AnimeBannerItem: React.FC<AnimeBannerItemProps> = ({
                     <div
                         className={cn(
                             'flex items-center ml-12 mr-4 gap-3 cursor-pointer text-white select-none',
-                            'transition-[color]',
+                            'transition-[color] duration-200',
                             'md:ml-15',
                             'hover:text-primary-foreground'
                         )}
@@ -68,7 +68,7 @@ const AnimeBannerItem: React.FC<AnimeBannerItemProps> = ({
                         <span
                             className={cn(
                                 'max-w-40 md:max-w-80 line-clamp-1',
-                                'transition-[max-width]'
+                                'transition-[max-width] duration-200'
                             )}
                             title={title}
                         >

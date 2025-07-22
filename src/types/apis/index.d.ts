@@ -6,3 +6,4 @@ export * from '@/types/apis/collection';
 export * from '@/types/apis/danmaku';
 export * from '@/types/apis/series';
 export * from '@/types/apis/rating';
+export * from '@/types/apis/notice';

@@ -139,8 +139,8 @@ const Anime: React.FC = () => {
                             <DropdownMenuTrigger asChild>
                                 <div
                                     className={cn(
-                                        'absolute flex items-center justify-center rounded-sm size-8 right-6 text-foreground',
-                                        'transition-colors hover:bg-accent md:cursor-pointer'
+                                        'absolute flex items-center justify-center rounded-sm size-8 right-5 text-foreground',
+                                        'transition-colors duration-200 hover:bg-accent md:cursor-pointer'
                                     )}
                                 >
                                     <EllipsisVertical size={18} />

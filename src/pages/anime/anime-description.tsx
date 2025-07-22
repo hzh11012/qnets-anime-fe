@@ -72,7 +72,7 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = ({
                 <Button
                     variant={`${isCollected ? 'outline' : 'default'}`}
                     className={cn('w-22 h-8', {
-                        'border-none': isCollected
+                        'bg-card dark:bg-muted border-none': isCollected
                     })}
                     disabled={collectLoading}
                     onClick={handleCollected}
@@ -105,12 +105,12 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = ({
                             className={cn('text-orange-400 md:cursor-pointer')}
                             title="动漫评分"
                         >
-                            {avgRating ? `${avgRating}分` : '暂无评分'}
+                            {avgRating ? `${avgRating * 2}分` : '暂无评分'}
                         </div>
                     </AnimeRating>
                 ) : (
                     <div className={cn('text-orange-400')}>
-                        {avgRating ? `${avgRating}分` : '暂无评分'}
+                        {avgRating ? `${avgRating * 2}分` : '暂无评分'}
                     </div>
                 )}
                 <div
@@ -124,7 +124,7 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = ({
                         size={14}
                         data-open={open}
                         className={cn(
-                            'transition-[rotate] data-[open=true]:rotate-180'
+                            'transition-[rotate] data-[open=true]:rotate-180 duration-200'
                         )}
                     />
                 </div>

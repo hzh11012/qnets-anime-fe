@@ -52,7 +52,7 @@ const AnimeSeries: React.FC<AnimeSeriesProps> = ({
                         <VideoCard
                             key={videoId + index}
                             className={cn(
-                                'w-full px-5 py-2 transition-colors hover:bg-accent/65'
+                                'w-full px-5 py-2 transition-colors duration-200 hover:bg-accent/65'
                             )}
                             title={name}
                             image={coverUrl}

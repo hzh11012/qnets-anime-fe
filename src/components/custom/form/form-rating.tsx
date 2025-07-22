@@ -56,7 +56,7 @@ const FormRating = <TFieldValues extends FieldValues>({
                                     />
                                     <Star
                                         size={26}
-                                        className={`transition-colors ${
+                                        className={`transition-colors duration-200 ${
                                             (hoverRating || field.value) >=
                                             value
                                                 ? 'text-orange-400'

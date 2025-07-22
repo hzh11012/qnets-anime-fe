@@ -17,7 +17,7 @@ const Layout: React.FC = () => {
                     <HeaderInset
                         className={cn(
                             'md:max-w-[110.25rem] md:mx-auto md:px-8 px-4',
-                            'transition-[max-width,padding,margin]'
+                            'transition-[max-width,padding,margin] duration-200'
                         )}
                     >
                         <Outlet />

@@ -55,7 +55,7 @@ const AnimeCollection: React.FC<AnimeCollectionProps> = ({
     }, []);
 
     return (
-        <div className={cn('select-none transition-[margin]', className)}>
+        <div className={cn('select-none transition-[margin] duration-200', className)}>
             <div className={cn('flex items-center justify-between mb-4')}>
                 <div className={cn('font-bold text-base')}>{title}</div>
                 <Button

@@ -77,7 +77,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
                 <CircleXIcon
                     className={cn(
                         'absolute end-11 cursor-pointer text-foreground/40',
-                        'transition-[color] hover:text-muted-foreground'
+                        'transition-[color] hover:text-muted-foreground duration-200'
                     )}
                     onClick={handleClear}
                     onMouseDown={handleMouseDown}
@@ -88,7 +88,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
             <SearchIcon
                 className={cn(
                     'absolute end-4 cursor-pointer text-foreground',
-                    'transition-[color] hover:text-muted-foreground'
+                    'transition-[color] hover:text-muted-foreground duration-200'
                 )}
                 onClick={handleSubmit}
                 onMouseDown={handleMouseDown}

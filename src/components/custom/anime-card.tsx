@@ -68,7 +68,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
         >
             <div
                 className={cn(
-                    'relative rounded-lg bg-cover bg-center overflow-hidden',
+                    'relative rounded-lg bg-cover bg-center overflow-hidden duration-200',
                     'md:hover:scale-105 md:cursor-pointer',
                     'md:transition-[scale]',
                     {
@@ -97,7 +97,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
             <div
                 className={cn(
                     'w-fit line-clamp-1 text-sm mt-2.5 hover:text-primary cursor-pointer',
-                    'transition-[color]'
+                    'transition-[color] duration-200'
                 )}
                 title={title}
                 onClick={onClick}
@@ -108,7 +108,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
                 <div
                     className={cn(
                         'w-fit line-clamp-1 text-xs mt-1.5 text-muted-foreground hover:text-primary cursor-pointer',
-                        'transition-[color]'
+                        'transition-[color] duration-200'
                     )}
                     title={remark}
                     onClick={onClick}

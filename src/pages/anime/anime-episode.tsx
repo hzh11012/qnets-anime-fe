@@ -66,7 +66,7 @@ const AnimeEpisode: React.FC<AnimeEpisodeProps> = ({
     };
 
     return (
-        <div className={cn('bg-muted rounded-sm overflow-hidden', className)}>
+        <div className={cn('bg-card dark:bg-muted rounded-sm overflow-hidden', className)}>
             <div
                 className={cn(
                     'relative flex items-center text-sm text-foreground gap-1 py-3 px-4'
@@ -79,7 +79,7 @@ const AnimeEpisode: React.FC<AnimeEpisodeProps> = ({
                 <div
                     className={cn(
                         'absolute right-4 cursor-pointer',
-                        'transition-colors hover:text-primary-foreground'
+                        'transition-colors duration-200 hover:text-primary-foreground'
                     )}
                     onClick={handleSort}
                 >
@@ -99,7 +99,7 @@ const AnimeEpisode: React.FC<AnimeEpisodeProps> = ({
                             ref={isCurrent ? currentEpisodeRef : undefined}
                             className={cn(
                                 'flex items-center px-4 h-10 text-foreground text-sm cursor-pointer',
-                                'transition-colors hover:bg-primary/20 hover:text-primary-foreground',
+                                'transition-colors duration-200 hover:bg-primary/20 hover:text-primary-foreground',
                                 {
                                     'text-primary-foreground bg-primary/20':
                                         isCurrent
