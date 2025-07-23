@@ -14,7 +14,7 @@ interface MailSheetProps {
     children: React.ReactNode;
 }
 
-const MailSheet: React.FC<MailSheetProps> = ({ children }) => {
+const NoticeSheet: React.FC<MailSheetProps> = ({ children }) => {
     const fetchNoticeData = useSidebarStore(state => state.fetchNoticeData);
     const loadMore = useSidebarStore(state => state.loadMore);
     const notices = useSidebarStore(state => state.notices);
@@ -112,4 +112,4 @@ const MailSheet: React.FC<MailSheetProps> = ({ children }) => {
     );
 };
 
-export default MailSheet;
+export default NoticeSheet;

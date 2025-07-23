@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { SidebarState, SidebarAction } from '@/types';
-import { getNoticeList } from '@/apis';
+import { getNoticeList, messageCreate } from '@/apis';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -12,6 +12,7 @@ const useSidebarStore = create<SidebarState & SidebarAction>((set, get) => ({
         total: 0,
         loading: false
     },
+    messageLoading: false,
 
     fetchNoticeData: async () => {
         const state = get();
@@ -69,6 +70,19 @@ const useSidebarStore = create<SidebarState & SidebarAction>((set, get) => ({
             });
         } catch (error) {
             set({ notices: { ...noticeState, loading: false } });
+        }
+    },
+
+    fetchMessage: async (data, cb) => {
+        set({ messageLoading: true });
+        try {
+            const res = await messageCreate(data);
+            if (res?.code === 200) {
+                cb();
+            }
+            set({ messageLoading: false });
+        } catch (error) {
+            set({ messageLoading: false });
         }
     }
 }));

@@ -22,7 +22,10 @@ const ALL_ANIME_TYPES = Object.keys(ANIME_TYPES_MAP);
 const NORMAL_ANIME_TYPES = ALL_ANIME_TYPES.slice(0, 4);
 
 const HomeSkeleton: React.FC = () => {
-    const baseContainerClasses = cn('mt-4 md:mt-8', 'transition-[margin] duration-200');
+    const baseContainerClasses = cn(
+        'mt-4 md:mt-8',
+        'transition-[margin] duration-200'
+    );
 
     const gridContainerClasses = cn(
         baseContainerClasses,

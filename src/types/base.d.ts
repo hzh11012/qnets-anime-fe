@@ -2,4 +2,9 @@ import Zod, { ZodType } from 'zod';
 
 type ZodFormValues<T extends ZodType> = Zod.infer<T>;
 
-export { ZodFormValues };
+interface Option {
+    label: string;
+    value: string;
+}
+
+export { ZodFormValues, Option };

@@ -13,8 +13,9 @@ import { useUserStore } from '@/store';
 import { Mail, LogOut, MessageCirclePlus } from 'lucide-react';
 import { useNavigate, useMatch } from 'react-router-dom';
 import ThemeSwitch from '@/components/custom/theme-switch';
-import FailAvatar from '../custom/fail-avatar';
-import MailSheet from './mail-sheet';
+import FailAvatar from '@/components/custom/fail-avatar';
+import NoticeSheet from '@/components/layout/notice-sheet';
+import MessageDialog from '@/components/layout/message-dialog';
 
 const sidebarBtnClass =
     'flex flex-col items-center text-card-foreground cursor-pointer transition-colors group/link hover:text-primary-foreground select-none duration-200';
@@ -64,14 +65,16 @@ const AppSidebar: React.FC = () => {
                         <FailAvatar />
                     </AvatarFallback>
                 </Avatar>
-                <MailSheet>
+                <NoticeSheet>
                     <div className={cn(sidebarBtnClass)} title="公告">
                         <Mail size={22} />
                     </div>
-                </MailSheet>
-                <div className={cn(sidebarBtnClass)} title="留言">
-                    <MessageCirclePlus size={22} />
-                </div>
+                </NoticeSheet>
+                <MessageDialog>
+                    <div className={cn(sidebarBtnClass)} title="留言">
+                        <MessageCirclePlus size={22} />
+                    </div>
+                </MessageDialog>
                 <div className={cn(sidebarBtnClass)} title="主题">
                     <ThemeSwitch />
                 </div>

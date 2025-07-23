@@ -7,3 +7,4 @@ export * from '@/apis/danmaku';
 export * from '@/apis/series';
 export * from '@/apis/rating';
 export * from '@/apis/notice';
+export * from '@/apis/message';
