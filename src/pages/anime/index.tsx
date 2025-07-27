@@ -96,7 +96,7 @@ const Anime: React.FC = () => {
             style={{ '--sidebar-width': SIDEBAR_WIDTH } as React.CSSProperties}
             className={cn('flex-col md:flex-row')}
         >
-            <SidebarInset className={cn('bg-black')}>
+            <SidebarInset className={cn('bg-black flex-none md:flex-1')}>
                 <Player
                     emitter={true}
                     url={detail.video.url}
@@ -108,7 +108,7 @@ const Anime: React.FC = () => {
             <Sidebar
                 wrapperClassName={cn('block')}
                 className={cn(
-                    'right-0 flex relative md:fixed w-full md:w-(--sidebar-width)'
+                    'right-0 flex relative md:fixed w-full h-auto md:w-(--sidebar-width)'
                 )}
                 innerClassName={cn('bg-background')}
             >

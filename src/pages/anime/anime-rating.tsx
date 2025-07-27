@@ -32,7 +32,9 @@ const schema = Zod.object({
     }),
     content: Zod.string({
         error: issue => (issue.input === undefined ? '不能为空' : '类型错误')
-    }).min(1, '不能为空')
+    })
+        .trim()
+        .min(1, '不能为空')
 });
 
 const AnimeRating: React.FC<AnimeRatingProps> = ({

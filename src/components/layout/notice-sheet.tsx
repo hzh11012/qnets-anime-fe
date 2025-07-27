@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
     Sheet,
     SheetContent,
@@ -9,6 +9,7 @@ import {
 import { cn, formatDate } from '@/lib/utils';
 import { useSidebarStore } from '@/store';
 import { useInView } from 'react-intersection-observer';
+import Exception from '@/components/custom/exception';
 
 interface MailSheetProps {
     children: React.ReactNode;
@@ -23,10 +24,14 @@ const NoticeSheet: React.FC<MailSheetProps> = ({ children }) => {
         fetchNoticeData();
     }, []);
 
+    const hasMore = useMemo(() => {
+        return notices.list.length < notices.total;
+    }, [notices.list, notices.total]);
+
     const { ref } = useInView({
         threshold: 0,
         onChange: inView => {
-            if (inView && !notices.loading) {
+            if (inView && !notices.loading && hasMore) {
                 loadMore();
             }
         }
@@ -38,7 +43,7 @@ const NoticeSheet: React.FC<MailSheetProps> = ({ children }) => {
             <SheetContent
                 close={false}
                 side="left"
-                className={cn('w-md left-17 top-17 z-5')}
+                className={cn('w-md left-17 top-[67px] z-5')}
                 overlayClassName={cn('bg-transparent z-4')}
             >
                 <SheetHeader className={cn('bg-background p-5')}>
@@ -95,16 +100,13 @@ const NoticeSheet: React.FC<MailSheetProps> = ({ children }) => {
                                 );
                             })}
                             {/* 触底加载的锚点 */}
-                            <div ref={ref} style={{ height: 0 }} />
+                            <div
+                                ref={hasMore ? ref : undefined}
+                                style={{ height: 0 }}
+                            />
                         </div>
                     ) : (
-                        <div
-                            className={cn(
-                                'flex items-center justify-center size-full text-sm text-muted-foreground'
-                            )}
-                        >
-                            暂无公告
-                        </div>
+                        <Exception type="empty" className={cn('w-64')} />
                     )}
                 </div>
             </SheetContent>

@@ -79,7 +79,7 @@ const AnimeEpisode: React.FC<AnimeEpisodeProps> = ({
                 <div
                     className={cn(
                         'absolute right-4 cursor-pointer',
-                        'transition-colors duration-200 hover:text-primary-foreground'
+                        'transition-colors duration-200 hover:text-primary'
                     )}
                     onClick={handleSort}
                 >
@@ -99,9 +99,9 @@ const AnimeEpisode: React.FC<AnimeEpisodeProps> = ({
                             ref={isCurrent ? currentEpisodeRef : undefined}
                             className={cn(
                                 'flex items-center px-4 h-10 text-foreground text-sm cursor-pointer',
-                                'transition-colors duration-200 hover:bg-primary/20 hover:text-primary-foreground',
+                                'transition-colors duration-200 hover:bg-primary/20 hover:text-primary',
                                 {
-                                    'text-primary-foreground bg-primary/20':
+                                    'text-primary bg-primary/20':
                                         isCurrent
                                 }
                             )}

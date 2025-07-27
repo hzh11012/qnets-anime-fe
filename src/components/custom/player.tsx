@@ -83,7 +83,7 @@ const Player: React.FC<PlayerProps> = ({
             customType: {
                 m3u8: playVideo
             },
-            theme: '#7c86ff',
+            theme: 'var(--primary)',
             plugins: [
                 artplayerPluginHlsQuality({
                     control: true,

@@ -18,7 +18,7 @@ import NoticeSheet from '@/components/layout/notice-sheet';
 import MessageDialog from '@/components/layout/message-dialog';
 
 const sidebarBtnClass =
-    'flex flex-col items-center text-card-foreground cursor-pointer transition-colors group/link hover:text-primary-foreground select-none duration-200';
+    'flex flex-col items-center text-card-foreground cursor-pointer transition-colors group/link hover:text-primary select-none duration-200';
 
 const AppSidebar: React.FC = () => {
     const user = useUserStore(state => state.userInfo);
@@ -29,7 +29,7 @@ const AppSidebar: React.FC = () => {
             <SidebarHeader
                 className={cn('h-[4.25rem] items-center justify-center')}
             >
-                <Logo size="2rem" />
+                <Logo type="favicon" />
             </SidebarHeader>
             <SidebarContent className={cn('text-[0.75rem] gap-6 py-8')}>
                 {links.map((link, index) => {
@@ -39,15 +39,15 @@ const AppSidebar: React.FC = () => {
                         <div
                             key={index}
                             className={cn(sidebarBtnClass, 'gap-1', {
-                                'text-primary-foreground': isActive
+                                'text-primary': isActive
                             })}
                             onClick={() => navigate(url)}
                         >
                             <Icon size={22} />
                             <span
                                 className={cn(
-                                    'transition-colors duration-200 text-muted-foreground group-hover/link:text-primary-foreground/70',
-                                    { 'text-primary-foreground/70': isActive }
+                                    'transition-colors duration-200 text-muted-foreground group-hover/link:text-primary/70',
+                                    { 'text-primary/70': isActive }
                                 )}
                             >
                                 {title}

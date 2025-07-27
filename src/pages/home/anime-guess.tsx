@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { AnimeCard, AnimeCardSkeleton } from '@/components/custom/anime-card';
 import { cn } from '@/lib/utils';
 import type { AnimeYouLike } from '@/types';
@@ -7,13 +7,14 @@ import { useInView } from 'react-intersection-observer';
 interface AnimeGuessProps {
     title: string;
     list: AnimeYouLike[];
+    total: number;
     loading: boolean;
     onLoadMore: () => void;
     onAnimeClick: (id: string) => void;
     className?: string;
 }
 
-const AnimeGuessSkeleton: React.FC<{ count?: number }> = ({ count = 5 }) => (
+const AnimeGuessSkeleton: React.FC<{ count?: number }> = ({ count = 10 }) => (
     <>
         {[...Array(count)].map((_, index) => (
             <AnimeCardSkeleton type="horizontal" key={index} />
@@ -24,15 +25,20 @@ const AnimeGuessSkeleton: React.FC<{ count?: number }> = ({ count = 5 }) => (
 const AnimeGuess: React.FC<AnimeGuessProps> = ({
     title,
     list,
+    total,
     className,
     loading,
     onLoadMore,
     onAnimeClick
 }) => {
+    const hasMore = useMemo(() => {
+        return list.length < total;
+    }, [list, total]);
+
     const { ref } = useInView({
         threshold: 0,
         onChange: inView => {
-            if (inView && !loading) {
+            if (inView && !loading && hasMore) {
                 onLoadMore();
             }
         }
@@ -54,10 +60,15 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
         return '即将开播';
     }, []);
 
-    if (!list.length) return null;
+    if (!list.length && !loading) return null;
 
     return (
-        <div className={cn('select-none transition-[margin] duration-200', className)}>
+        <div
+            className={cn(
+                'select-none transition-[margin] duration-200',
+                className
+            )}
+        >
             <div className={cn('flex items-center mb-4')}>
                 <div className={cn('font-bold text-base')}>{title}</div>
             </div>
@@ -84,7 +95,7 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
                 ))}
                 {loading && <AnimeGuessSkeleton />}
                 {/* 触底加载的锚点 */}
-                <div ref={ref} style={{ height: 0 }} />
+                <div ref={hasMore ? ref : undefined} style={{ height: 0 }} />
             </div>
         </div>
     );

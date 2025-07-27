@@ -115,7 +115,7 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = ({
                 )}
                 <div
                     className={cn(
-                        'absolute right-0 flex items-center gap-1 select-none cursor-pointer hover:text-primary-foreground'
+                        'absolute right-0 flex items-center gap-1 select-none cursor-pointer hover:text-primary'
                     )}
                     onClick={() => setOpen(!open)}
                 >

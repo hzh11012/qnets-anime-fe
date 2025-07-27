@@ -138,7 +138,7 @@ const Home: React.FC = () => {
                 title="我的追番"
                 list={collections}
                 onAnimeClick={handleAnimeClick}
-                onAllClick={() => handleTopicAllClick()}
+                onAllClick={() => handleCollectionAllClick()}
             />
 
             {renderAnimeTypes}
@@ -147,13 +147,14 @@ const Home: React.FC = () => {
                 title="专题推荐"
                 list={topics}
                 onTopicClick={handleTopicClick}
-                onAllClick={() => handleCollectionAllClick()}
+                onAllClick={() => handleTopicAllClick()}
             />
 
             <AnimeGuess
                 title="猜你喜欢"
                 loading={recommended.loading}
                 list={recommended.list}
+                total={recommended.total}
                 onLoadMore={loadMore}
                 onAnimeClick={handleAnimeClick}
             />

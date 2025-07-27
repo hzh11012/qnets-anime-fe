@@ -88,6 +88,27 @@ interface AnimeRecommendRes {
     rows: AnimeRecommend[];
 }
 
+interface AnimeHotRank {
+    id: string;
+    name: string;
+    remark: string;
+    coverUrl: string;
+    status: number;
+    type: number;
+    videoCount: number;
+    videoId?: string;
+}
+
+interface AnimeHotRankRes {
+    total: number;
+    rows: AnimeHotRank[];
+}
+
+interface AnimeHotRankParams {
+    page?: number;
+    pageSize?: number;
+}
+
 export {
     AnimeOptionsRes,
     AnimeOption,
@@ -99,5 +120,8 @@ export {
     AnimeDetailParams,
     AnimeRecommendRes,
     AnimeRecommend,
-    AnimeRecommendParams
+    AnimeRecommendParams,
+    AnimeHotRankRes,
+    AnimeHotRank,
+    AnimeHotRankParams
 };

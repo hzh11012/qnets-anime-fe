@@ -6,8 +6,7 @@ import {
     useLocation,
     useNavigationType
 } from 'react-router-dom';
-import Loading from '@/components/custom/loading';
-import Error from '@/components/custom/error';
+import Fallback from '@/components/custom/fallback';
 import { getUserInfo } from '@/apis';
 import { useUserStore, useAnimeStore } from '@/store';
 import Layout from '@/layout';
@@ -56,7 +55,7 @@ const WithLayout = ({ children }: { children: React.ReactNode }) => {
 
     const userInfo = useUserStore(state => state.userInfo);
     if (userInfo?.status === 0) {
-        return <Exception code="43" msg="账号未开通/已封禁" />;
+        return <Exception type="ban" />;
     }
     return <>{children}</>;
 };
@@ -82,12 +81,12 @@ const WithVideoLayout = ({ children }: { children: React.ReactNode }) => {
 
     const userInfo = useUserStore(state => state.userInfo);
     if (userInfo?.status === 0) {
-        return <Exception code="43" msg="账号未开通/已封禁" />;
+        return <Exception type="ban" />;
     }
 
     const animeDetail = useAnimeStore(state => state.animeDetail);
     if (!animeDetail) {
-        return <Exception code="44" />;
+        return <Exception type="not-found" />;
     }
     return <>{children}</>;
 };
@@ -101,8 +100,8 @@ const staticRoutes: RouteObject[] = [
                 <Layout />
             </WithLayout>
         ),
-        hydrateFallbackElement: <Loading />,
-        errorElement: <Error />,
+        hydrateFallbackElement: <Fallback />,
+        errorElement: <Exception type="error" />,
         children: [
             {
                 index: true,
@@ -111,8 +110,15 @@ const staticRoutes: RouteObject[] = [
                 })
             },
             {
+                path: 'rank',
+                index: true,
+                lazy: async () => ({
+                    Component: (await import('@/pages/rank/index')).default
+                })
+            },
+            {
                 path: '*',
-                element: <Exception code="44" />
+                element: <Exception type="not-found" />
             }
         ]
     },
@@ -127,8 +133,8 @@ const staticRoutes: RouteObject[] = [
                 <Outlet />
             </WithVideoLayout>
         ),
-        hydrateFallbackElement: <Loading />,
-        errorElement: <Error />,
+        hydrateFallbackElement: <Fallback />,
+        errorElement: <Exception type="error" />,
         children: [
             {
                 index: true,

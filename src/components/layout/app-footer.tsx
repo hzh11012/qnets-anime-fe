@@ -18,7 +18,7 @@ const AppFooter: React.FC = () => {
                         className={cn(
                             'flex flex-col text-xs items-center justify-center text-card-foreground cursor-pointer select-none gap-1',
                             {
-                                'text-primary-foreground': isActive
+                                'text-primary': isActive
                             }
                         )}
                         onClick={() => navigate(url)}
@@ -27,7 +27,7 @@ const AppFooter: React.FC = () => {
                         <span
                             className={cn(
                                 'transition-colors duration-200 text-muted-foreground',
-                                { 'text-primary-foreground/70': isActive }
+                                { 'text-primary/70': isActive }
                             )}
                         >
                             {title}

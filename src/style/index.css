@@ -13,11 +13,10 @@
     --color-foreground: var(--foreground);
     --color-border: var(--border);
     --color-border-accent: var(--border-accent);
-    --color-ring: var(--ring);
+    --color-ring: var(--primary);
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
     --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
     --color-destructive: var(--destructive);
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
@@ -25,6 +24,11 @@
     --color-input: var(--input);
     --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
+
+    --color-svg-border: var(--svg-border);
+    --color-svg-background: var(--svg-background);
+    --color-svg-accent: var(--svg-accent);
+    --color-svg-muted: var(--svg-muted);
 }
 
 :root {
@@ -33,11 +37,9 @@
     --foreground: oklch(0.145 0 0);
     --border: oklch(0.922 0 0);
     --border-accent: oklch(0.921 0.004 247.306);
-    --ring: oklch(0.585 0.233 277.117);
     --card: oklch(0.976 0.002 246.668);
     --card-foreground: oklch(0.508 0.013 256.632);
     --primary: oklch(0.585 0.233 277.117);
-    --primary-foreground: oklch(0.585 0.233 277.117);
     --destructive: oklch(0.678 0.193 25.827);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
@@ -45,6 +47,11 @@
     --input: oklch(0.961 0.002 246.69);
     --muted: oklch(1 0 0);
     --muted-foreground: oklch(0.508 0.013 256.632 / 0.7);
+
+    --svg-background: oklch(1 0 0);
+    --svg-border: oklch(0.145 0 0);
+    --svg-accent: oklch(0.9 0 0);
+    --svg-muted: oklch(0.77 0 0);
 }
 
 .dark {
@@ -52,11 +59,9 @@
     --foreground: oklch(0.985 0 0);
     --border: oklch(1 0 0 / 0.1);
     --border-accent: oklch(0.312 0.006 258.216);
-    --ring: oklch(0.673 0.182 276.935);
     --card: oklch(0.242 0.005 247.918);
     --card-foreground: oklch(0.727 0.012 256.551);
     --primary: oklch(0.673 0.182 276.935);
-    --primary-foreground: oklch(0.673 0.182 276.935);
     --destructive: oklch(0.582 0.182 25.507);
     --popover: oklch(0.209 0.004 264.334);
     --popover-foreground: oklch(0.985 0 0);
@@ -64,10 +69,11 @@
     --input: oklch(0.262 0.006 236.684);
     --muted: oklch(0.267 0.005 247.881);
     --muted-foreground: oklch(0.727 0.012 256.551 / 0.7);
-}
 
-.bg-exception:before {
-    background-image: url('/exception.png');
+    --svg-background: oklch(0 0 0);
+    --svg-border: oklch(0.985 0 0);
+    --svg-accent: oklch(0.69 0 0);
+    --svg-muted: oklab(0.57 0 0);
 }
 
 .bg-fail-avatar {

@@ -61,7 +61,7 @@ const AnimeBannerItem: React.FC<AnimeBannerItemProps> = ({
                             'flex items-center ml-12 mr-4 gap-3 cursor-pointer text-white select-none',
                             'transition-[color] duration-200',
                             'md:ml-15',
-                            'hover:text-primary-foreground'
+                            'hover:text-primary'
                         )}
                         onClick={onClick}
                     >

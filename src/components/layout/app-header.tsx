@@ -12,8 +12,11 @@ const AppHeader: React.FC = () => {
     return (
         <Header className={cn('px-[1.125rem] md:px-8 justify-between')}>
             <HeaderLeft className={cn('pl-0 items-center')}>
-                <Logo size="2rem" className={cn('md:hidden')} />
-                <img src="/logo.png" className={cn('h-9 hidden md:block')} />
+                <Logo type="favicon" className={cn('md:hidden')} />
+                <Logo
+                    type="logo"
+                    className={cn('w-auto h-8 hidden md:block')}
+                />
             </HeaderLeft>
             <HeaderRight className={cn('p-0 items-center')}>
                 <SearchInput
