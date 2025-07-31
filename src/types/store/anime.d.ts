@@ -25,6 +25,16 @@ interface AnimeState {
         data: { score: string; content: string },
         cb: () => void
     ) => Promise<void>;
+    fetchPlay: (id: string) => Promise<void>;
+    saveHistory: ({
+        id,
+        animeId,
+        time
+    }: {
+        id: string;
+        animeId: string;
+        time: number;
+    }) => Promise<void>;
 }
 
 export { AnimeState, AnimeAction };

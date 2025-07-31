@@ -7,6 +7,7 @@ import Exception from '@/components/custom/exception';
 
 interface AnimeRankProps {
     title: string;
+    description?: string;
     list: AnimeHotRank[];
     total: number;
     loading: boolean;
@@ -25,6 +26,7 @@ const AnimeRankSkeleton: React.FC<{ count?: number }> = ({ count = 10 }) => (
 
 const AnimeRank: React.FC<AnimeRankProps> = ({
     title,
+    description,
     list,
     total,
     className,
@@ -70,6 +72,11 @@ const AnimeRank: React.FC<AnimeRankProps> = ({
         >
             <div className={cn('flex items-center mb-4')}>
                 <div className={cn('font-bold text-base')}>{title}</div>
+                {description && (
+                    <div className={cn('text-sm text-muted-foreground')}>
+                        {description}
+                    </div>
+                )}
             </div>
             {!list.length && !loading ? (
                 <Exception type="empty" />
@@ -85,17 +92,28 @@ const AnimeRank: React.FC<AnimeRankProps> = ({
                         'max-md:grid-cols-3'
                     )}
                 >
-                    {list.map(item => (
-                        <AnimeCard
-                            key={item.id}
-                            type="vertical"
-                            title={item.name}
-                            remark={item.remark}
-                            tip={getSubTitle(item)}
-                            image={item.coverUrl}
-                            onClick={() => handleAnimeClick(item.videoId || '')}
-                        />
-                    ))}
+                    {list.map(item => {
+                        const {
+                            id,
+                            name,
+                            remark,
+                            coverUrl,
+                            videoId = ''
+                        } = item;
+                        const tip = getSubTitle(item);
+
+                        return (
+                            <AnimeCard
+                                key={id}
+                                type="vertical"
+                                title={name}
+                                remark={remark}
+                                tip={tip}
+                                image={coverUrl}
+                                onClick={() => handleAnimeClick(videoId)}
+                            />
+                        );
+                    })}
                     {loading && <AnimeRankSkeleton />}
                     {/* 触底加载的锚点 */}
                     <div

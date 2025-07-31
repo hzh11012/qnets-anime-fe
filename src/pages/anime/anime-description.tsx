@@ -27,13 +27,15 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = ({
     const [open, setOpen] = useState(false);
 
     const {
-        anime,
-        avgRating,
-        rating = '',
-        collectionCount,
+        name,
+        description,
+        status,
+        averageRating,
         playCount,
         videoCount,
-        isCollected
+        collectionCount,
+        isCollected,
+        isRating
     } = detail;
 
     const { run: handleCollected } = useDebounceFn(
@@ -65,9 +67,9 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = ({
             <div className={'flex items-center justify-between leading-none'}>
                 <div
                     className={cn('line-clamp-1 text-foreground text-base')}
-                    title={anime.name}
+                    title={name}
                 >
-                    {anime.name}
+                    {name}
                 </div>
                 <Button
                     variant={`${isCollected ? 'outline' : 'default'}`}
@@ -82,10 +84,7 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = ({
                 </Button>
             </div>
             <div className={cn('text-xs leading-none')}>
-                {getRemark({
-                    videoCount,
-                    status: anime.status
-                })}
+                {getRemark({ videoCount, status })}
             </div>
             <div className={cn('flex items-center text-xs mt-1.5 gap-3')}>
                 <div className={cn('flex items-center gap-1')}>
@@ -96,7 +95,7 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = ({
                     <Heart size={12} />
                     <span>{collectionCount}</span>
                 </div>
-                {!rating ? (
+                {!isRating ? (
                     <AnimeRating
                         onSubmit={handleRating}
                         loading={ratingLoading}
@@ -105,12 +104,12 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = ({
                             className={cn('text-orange-400 md:cursor-pointer')}
                             title="动漫评分"
                         >
-                            {avgRating ? `${avgRating * 2}分` : '暂无评分'}
+                            {averageRating ? `${averageRating * 2}分` : '暂无评分'}
                         </div>
                     </AnimeRating>
                 ) : (
                     <div className={cn('text-orange-400')}>
-                        {avgRating ? `${avgRating * 2}分` : '暂无评分'}
+                        {averageRating ? `${averageRating * 2}分` : '暂无评分'}
                     </div>
                 )}
                 <div
@@ -136,7 +135,7 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = ({
                 )}
                 data-open={open}
             >
-                {anime.description}
+                {description}
             </div>
         </div>
     );

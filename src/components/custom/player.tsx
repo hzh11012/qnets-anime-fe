@@ -12,7 +12,10 @@ interface PlayerProps {
     className?: string;
     emitter?: boolean;
     danmaku: DanmakuItem[];
+    isSeekHistory: boolean;
     onDanmuEmit?: (danmu: DanmakuItem) => boolean | Promise<boolean>;
+    onIncrementPlay?: () => void;
+    onHistoryEmit?: (time: number) => void;
 }
 
 const playVideo = (video: HTMLVideoElement, url: string, art: Artplayer) => {
@@ -45,10 +48,14 @@ const Player: React.FC<PlayerProps> = ({
     className,
     emitter = false,
     danmaku,
-    onDanmuEmit
+    isSeekHistory,
+    onDanmuEmit,
+    onIncrementPlay,
+    onHistoryEmit
 }) => {
     const ref = useRef<HTMLDivElement>(null);
     const artRef = useRef<Artplayer | null>(null);
+    const lastTimeRef = useRef(0);
 
     useEffect(() => {
         if (!ref.current || artRef.current) return;
@@ -104,15 +111,25 @@ const Player: React.FC<PlayerProps> = ({
             ]
         });
 
-        art.on('ready', () => {
+        const seekTime = () => {
             if (time) {
                 art.seek = time;
             }
-        });
+        };
+
+        const saveTime = () => {
+            lastTimeRef.current = art.currentTime;
+        };
+
+        art.on('ready', seekTime);
+
+        art.on('video:timeupdate', saveTime);
 
         artRef.current = art;
 
         return () => {
+            art.off('ready', seekTime);
+            art.off('video:timeupdate', saveTime);
             art.destroy(false);
             artRef.current = null;
         };
@@ -121,10 +138,59 @@ const Player: React.FC<PlayerProps> = ({
     // url 变化时切换视频源
     useEffect(() => {
         const art = artRef.current;
-        if (art) {
+        if (art && art.url !== url) {
             art.switchUrl(url);
         }
     }, [url]);
+
+    useEffect(() => {
+        const art = artRef.current;
+        if (!art) return;
+
+        const seekTime = () => {
+            if (time && isSeekHistory) {
+                art.seek = time;
+            }
+        };
+
+        art.on('restart', seekTime);
+
+        return () => {
+            art.off('restart', seekTime);
+        };
+    }, [time, isSeekHistory]);
+
+    useEffect(() => {
+        const art = artRef.current;
+        if (!art) return;
+
+        const handleTimeUpdate = () => {
+            // 只在播放状态下累加
+            if (!art.playing) return;
+            onIncrementPlay?.();
+            art.off('video:timeupdate', handleTimeUpdate);
+        };
+
+        art.on('video:timeupdate', handleTimeUpdate);
+
+        // 卸载时移除监听
+        return () => {
+            art.off('video:timeupdate', handleTimeUpdate);
+        };
+    }, [onIncrementPlay, url]);
+
+    useEffect(() => {
+        const save = () => {
+            onHistoryEmit?.(lastTimeRef.current);
+        };
+
+        window.addEventListener('beforeunload', save);
+
+        return () => {
+            window.removeEventListener('beforeunload', save);
+            save();
+        };
+    }, [onHistoryEmit]);
 
     useEffect(() => {
         const art = artRef.current;

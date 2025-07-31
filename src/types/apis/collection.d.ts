@@ -1,11 +1,12 @@
 interface CollectionOption {
-    videoId?: string;
+    id: string;
     name: string;
     time: number;
     bannerUrl: string;
     status: number;
     videoCount: string;
     episode: string;
+    videoId?: string;
 }
 
 interface CollectionOptionsRes {

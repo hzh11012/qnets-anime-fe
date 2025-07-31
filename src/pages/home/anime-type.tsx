@@ -49,7 +49,12 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
     }, []);
 
     return (
-        <div className={cn('select-none transition-[margin] duration-200', className)}>
+        <div
+            className={cn(
+                'select-none transition-[margin] duration-200',
+                className
+            )}
+        >
             <div className={cn('flex items-center justify-between mb-4')}>
                 <div className={cn('font-bold text-base')}>{title}</div>
                 <Button
@@ -77,7 +82,7 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
             >
                 {displayList.map((item, index) => {
                     const { id, name, coverUrl, remark, videoId = '' } = item;
-                    const subTitle = getSubTitle(item);
+                    const tip = getSubTitle(item);
 
                     return (
                         <AnimeCard
@@ -87,7 +92,7 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
                             title={name}
                             remark={remark}
                             image={coverUrl}
-                            tip={subTitle}
+                            tip={tip}
                             onClick={() => handleAnimeClick(videoId)}
                         />
                     );

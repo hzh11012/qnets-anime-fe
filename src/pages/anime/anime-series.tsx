@@ -38,10 +38,11 @@ const AnimeSeries: React.FC<AnimeSeriesProps> = ({
         <div className={cn('select-none', className)}>
             <div className={cn('px-5 text-foreground my-1.5')}>{title}</div>
             <div className={cn('flex flex-col flex-wrap')}>
-                {list.map((item, index) => {
+                {list.map(item => {
                     const {
+                        id,
                         name,
-                        coverUrl,
+                        bannerUrl,
                         playCount,
                         collectionCount,
                         videoId = ''
@@ -50,12 +51,12 @@ const AnimeSeries: React.FC<AnimeSeriesProps> = ({
                     const remark = getRemark(item);
                     return (
                         <VideoCard
-                            key={videoId + index}
+                            key={id}
                             className={cn(
                                 'w-full px-5 py-2 transition-colors duration-200 hover:bg-accent/65'
                             )}
                             title={name}
-                            image={coverUrl}
+                            image={bannerUrl}
                             plays={playCount}
                             collections={collectionCount}
                             remark={remark}

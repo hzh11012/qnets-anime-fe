@@ -7,7 +7,9 @@ import {
     getAnimeSeries,
     createCollection,
     cancelCollection,
-    createRating
+    createRating,
+    incrementPlayCount,
+    saveHistory
 } from '@/apis';
 
 const useAnimeStore = create<AnimeState & AnimeAction>((set, get) => ({
@@ -93,7 +95,7 @@ const useAnimeStore = create<AnimeState & AnimeAction>((set, get) => ({
                     animeDetail: state.animeDetail
                         ? {
                               ...state.animeDetail,
-                              rating: Number(data.score)
+                              isRating: true
                           }
                         : null
                 });
@@ -103,6 +105,12 @@ const useAnimeStore = create<AnimeState & AnimeAction>((set, get) => ({
         } catch (error) {
             set({ ratingLoading: false });
         }
+    },
+    fetchPlay: async id => {
+        await incrementPlayCount({ id });
+    },
+    saveHistory: async ({ id, animeId, time }) => {
+        await saveHistory({ id, animeId, time });
     }
 }));
 

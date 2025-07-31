@@ -55,7 +55,12 @@ const AnimeCollection: React.FC<AnimeCollectionProps> = ({
     }, []);
 
     return (
-        <div className={cn('select-none transition-[margin] duration-200', className)}>
+        <div
+            className={cn(
+                'select-none transition-[margin] duration-200',
+                className
+            )}
+        >
             <div className={cn('flex items-center justify-between mb-4')}>
                 <div className={cn('font-bold text-base')}>{title}</div>
                 <Button
@@ -78,13 +83,13 @@ const AnimeCollection: React.FC<AnimeCollectionProps> = ({
                 )}
             >
                 {displayList.map((item, index) => {
-                    const { videoId = '', name, bannerUrl } = item;
+                    const { id, videoId = '', name, bannerUrl } = item;
                     const tip = getTip(item);
                     const remark = getRemark(item);
 
                     return (
                         <AnimeCard
-                            key={videoId + index}
+                            key={id}
                             type="horizontal"
                             className={getResponsiveClasses(
                                 index,

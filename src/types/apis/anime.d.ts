@@ -23,7 +23,6 @@ interface AnimeYouLike {
     remark: string;
     bannerUrl: string;
     status: number;
-    type: number;
     videoCount: number;
     videoId?: string;
 }
@@ -43,29 +42,28 @@ interface AnimeDetailParams {
 }
 
 interface AnimeDetailRes {
-    anime: {
-        name: string;
-        status: number;
-        description: string;
-    };
-    avgRating: number;
-    collectionCount: number;
-    rating?: number;
+    name: string;
+    description: string;
+    status: number;
+    averageRating: number;
     playCount: number;
+    videoCount: number;
+    collectionCount: number;
+    time?: number;
     video: {
+        id: string;
         animeId: string;
         title: string;
         url: string;
         episode: number;
     };
-    videoCount: number;
-    isCollected: boolean;
-    time: number;
     videoList: {
         id: string;
         episode: number;
         title: string;
     }[];
+    isCollected: boolean;
+    isRating: boolean;
 }
 
 interface AnimeRecommendParams {
@@ -73,13 +71,14 @@ interface AnimeRecommendParams {
 }
 
 interface AnimeRecommend {
+    id: string;
     name: string;
-    coverUrl: string;
+    bannerUrl: string;
     status: number;
     videoCount: number;
     playCount: number;
     collectionCount: number;
-    avgRating: number;
+    averageRating: number;
     videoId?: string;
 }
 
@@ -94,7 +93,6 @@ interface AnimeHotRank {
     remark: string;
     coverUrl: string;
     status: number;
-    type: number;
     videoCount: number;
     videoId?: string;
 }

@@ -35,11 +35,12 @@ const AnimeRecommend: React.FC<AnimeRecommendProps> = ({
     return (
         <div className={cn('select-none', className)}>
             <div className={cn('flex flex-col flex-wrap')}>
-                {list.map((item, index) => {
+                {list.map(item => {
                     const {
+                        id,
                         name,
-                        coverUrl,
-                        avgRating,
+                        bannerUrl,
+                        averageRating,
                         playCount,
                         collectionCount,
                         videoId = ''
@@ -48,15 +49,15 @@ const AnimeRecommend: React.FC<AnimeRecommendProps> = ({
                     const remark = getRemark(item);
                     return (
                         <VideoCard
-                            key={videoId + index}
+                            key={id}
                             className={cn(
                                 'w-full px-5 py-2 transition-colors duration-200 hover:bg-accent/65'
                             )}
                             title={name}
-                            image={coverUrl}
+                            image={bannerUrl}
                             plays={playCount}
                             collections={collectionCount}
-                            rating={avgRating * 2}
+                            rating={averageRating * 2}
                             remark={remark}
                             onClick={() => handleAnimeClick(videoId)}
                         />

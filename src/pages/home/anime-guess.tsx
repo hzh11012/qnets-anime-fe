@@ -82,17 +82,22 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
                     'max-md:grid-cols-2'
                 )}
             >
-                {list.map(item => (
-                    <AnimeCard
-                        key={item.id}
-                        type="horizontal"
-                        title={item.name}
-                        remark={item.remark}
-                        tip={getSubTitle(item)}
-                        image={item.bannerUrl}
-                        onClick={() => handleAnimeClick(item.videoId || '')}
-                    />
-                ))}
+                {list.map(item => {
+                    const { id, videoId = '', name, remark, bannerUrl } = item;
+                    const tip = getSubTitle(item);
+
+                    return (
+                        <AnimeCard
+                            key={id}
+                            type="horizontal"
+                            title={name}
+                            remark={remark}
+                            tip={tip}
+                            image={bannerUrl}
+                            onClick={() => handleAnimeClick(videoId)}
+                        />
+                    );
+                })}
                 {loading && <AnimeGuessSkeleton />}
                 {/* 触底加载的锚点 */}
                 <div ref={hasMore ? ref : undefined} style={{ height: 0 }} />

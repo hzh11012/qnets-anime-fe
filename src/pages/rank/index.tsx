@@ -30,6 +30,7 @@ const Rank: React.FC = () => {
         >
             <AnimeRank
                 title="热门动漫排行"
+                description="（该榜单每小时更新一次）"
                 loading={loading}
                 list={ranks}
                 total={total}

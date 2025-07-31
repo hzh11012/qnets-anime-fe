@@ -3,8 +3,9 @@ interface AnimeSeriesListParams {
 }
 
 interface AnimeSeriesItem {
+    id: string;
     name: string;
-    coverUrl: string;
+    bannerUrl: string;
     status: number;
     videoCount: number;
     playCount: number;
