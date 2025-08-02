@@ -110,6 +110,13 @@ const staticRoutes: RouteObject[] = [
                 })
             },
             {
+                path: 'guide',
+                index: true,
+                lazy: async () => ({
+                    Component: (await import('@/pages/guide/index')).default
+                })
+            },
+            {
                 path: 'rank',
                 index: true,
                 lazy: async () => ({

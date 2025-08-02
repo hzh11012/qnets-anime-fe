@@ -7,7 +7,6 @@ import Exception from '@/components/custom/exception';
 
 interface AnimeRankProps {
     title: string;
-    description?: string;
     list: AnimeHotRank[];
     total: number;
     loading: boolean;
@@ -26,7 +25,6 @@ const AnimeRankSkeleton: React.FC<{ count?: number }> = ({ count = 10 }) => (
 
 const AnimeRank: React.FC<AnimeRankProps> = ({
     title,
-    description,
     list,
     total,
     className,
@@ -71,12 +69,7 @@ const AnimeRank: React.FC<AnimeRankProps> = ({
             )}
         >
             <div className={cn('flex items-center mb-4')}>
-                <div className={cn('font-bold text-base')}>{title}</div>
-                {description && (
-                    <div className={cn('text-sm text-muted-foreground')}>
-                        {description}
-                    </div>
-                )}
+                <div className={cn('font-bold text-base leading-9')}>{title}</div>
             </div>
             {!list.length && !loading ? (
                 <Exception type="empty" />

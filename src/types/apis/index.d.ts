@@ -9,3 +9,4 @@ export * from '@/types/apis/rating';
 export * from '@/types/apis/notice';
 export * from '@/types/apis/message';
 export * from '@/types/apis/video';
+export * from '@/types/apis/guide';

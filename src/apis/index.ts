@@ -10,3 +10,4 @@ export * from '@/apis/notice';
 export * from '@/apis/message';
 export * from '@/apis/video';
 export * from '@/apis/video-history';
+export * from '@/apis/guide';

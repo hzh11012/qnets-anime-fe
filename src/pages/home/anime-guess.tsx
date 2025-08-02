@@ -70,7 +70,7 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
             )}
         >
             <div className={cn('flex items-center mb-4')}>
-                <div className={cn('font-bold text-base')}>{title}</div>
+                <div className={cn('font-bold text-base leading-9')}>{title}</div>
             </div>
             <div
                 className={cn(

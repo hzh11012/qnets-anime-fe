@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { useRankStore } from '@/store';
-import AnimeRank from '@/pages/rank/anime-rank';
+import { useGuideStore } from '@/store';
+import AnimeGuide from '@/pages/guide/anime-guide';
 
 const Rank: React.FC = () => {
     const navigate = useNavigate();
 
-    const loading = useRankStore(state => state.loading);
-    const ranks = useRankStore(state => state.list);
-    const total = useRankStore(state => state.total);
-    const fetchData = useRankStore(state => state.fetchData);
-    const loadMore = useRankStore(state => state.loadMore);
+    const loading = useGuideStore(state => state.loading);
+    const guides = useGuideStore(state => state.list);
+    const total = useGuideStore(state => state.total);
+    const updateDay = useGuideStore(state => state.updateDay);
+    const fetchData = useGuideStore(state => state.fetchData);
+    const loadMore = useGuideStore(state => state.loadMore);
+    const setUpdateDay = useGuideStore(state => state.setUpdateDay);
 
     useEffect(() => {
         fetchData();
@@ -28,11 +30,13 @@ const Rank: React.FC = () => {
                 'transition-[margin] duration-200'
             )}
         >
-            <AnimeRank
-                title="热门动漫排行"
+            <AnimeGuide
+                title="新番导视"
+                defaultUpdateDay={updateDay}
                 loading={loading}
-                list={ranks}
+                list={guides}
                 total={total}
+                onUpdateDayChage={setUpdateDay}
                 onLoadMore={loadMore}
                 onAnimeClick={handleAnimeClick}
             />

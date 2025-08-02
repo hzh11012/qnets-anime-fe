@@ -62,7 +62,7 @@ const AnimeCollection: React.FC<AnimeCollectionProps> = ({
             )}
         >
             <div className={cn('flex items-center justify-between mb-4')}>
-                <div className={cn('font-bold text-base')}>{title}</div>
+                <div className={cn('font-bold text-base leading-9')}>{title}</div>
                 <Button
                     variant="outline"
                     className={cn('gap-1')}

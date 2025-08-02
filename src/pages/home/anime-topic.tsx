@@ -35,7 +35,7 @@ const AnimeTopic: React.FC<AnimeTopicProps> = ({
     return (
         <div className={cn('select-none transition-[margin] duration-200', className)}>
             <div className={cn('flex items-center justify-between mb-4')}>
-                <div className={cn('font-bold text-base')}>{title}</div>
+                <div className={cn('font-bold text-base leading-9')}>{title}</div>
                 <Button
                     variant="outline"
                     className={cn('gap-1')}
