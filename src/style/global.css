@@ -13,6 +13,12 @@ html {
     scrollbar-color: #888 transparent;
 }
 
+.search-keywrod em {
+    font-style: normal;
+    line-height: normal;
+    color: var(--primary);
+}
+
 /**
 * 这里覆盖弹幕库的样式
 */

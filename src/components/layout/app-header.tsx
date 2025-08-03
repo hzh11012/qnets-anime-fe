@@ -1,12 +1,26 @@
 import React from 'react';
 import Logo from '@/components/custom/logo';
 import { Header, HeaderLeft, HeaderRight } from '@/components/ui/header';
-import SearchInput from '@/components/custom/search-Input';
+import SearchInput from '@/components/layout/search-Input';
 import { cn } from '@/lib/utils';
+import { useSearchSuggestStore } from '@/store';
+import { useNavigate } from 'react-router-dom';
 
 const AppHeader: React.FC = () => {
-    const handleSubmit = (value: string) => {
-        // TODO
+    const navigate = useNavigate();
+
+    const suggests = useSearchSuggestStore(state => state.list);
+    const fetchData = useSearchSuggestStore(state => state.fetchData);
+
+    const handleSubmit = async (value: string) => {
+        await fetchData(value);
+        navigate(`search?keyword=${value}`);
+    };
+
+    const handleChange = async (keyword: string) => {
+        if (keyword.trim()) {
+            await fetchData(keyword);
+        }
     };
 
     return (
@@ -21,15 +35,13 @@ const AppHeader: React.FC = () => {
             <HeaderRight className={cn('p-0 items-center')}>
                 <SearchInput
                     onSubmit={handleSubmit}
+                    onChange={handleChange}
+                    suggests={suggests}
                     placeholder="搜索你感兴趣的动漫"
                     className={cn(
                         'absolute right-4 md:right-8 w-1/2 md:w-[18.625rem]',
                         'transition-[width,right,color,background-color,border-color] duration-200',
-                        'md:data-[focus=true]:right-[calc(50%-13.4375rem)] md:data-[focus=true]:w-[26.875rem]',
-                        'md:data-[value=true]:right-[calc(50%-13.4375rem)] md:data-[value=true]:w-[26.875rem]'
-                    )}
-                    inputClassName={cn(
-                        'md:data-[value=true]:border-ring md:data-[value=true]:bg-transparent!'
+                        'md:data-[activated=true]:right-[calc(50%-13.4375rem)] md:data-[activated=true]:w-[26.875rem]'
                     )}
                 />
             </HeaderRight>

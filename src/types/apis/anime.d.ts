@@ -107,6 +107,20 @@ interface AnimeHotRankParams {
     pageSize?: number;
 }
 
+interface AnimeSuggestItem {
+    name: string;
+    highlightName: string;
+}
+
+interface AnimeSuggestParams {
+    keyword: string;
+}
+
+interface AnimeSuggestRes {
+    total: number;
+    rows: AnimeSuggestItem[];
+}
+
 export {
     AnimeOptionsRes,
     AnimeOption,
@@ -121,5 +135,8 @@ export {
     AnimeRecommendParams,
     AnimeHotRankRes,
     AnimeHotRank,
-    AnimeHotRankParams
+    AnimeHotRankParams,
+    AnimeSuggestItem,
+    AnimeSuggestRes,
+    AnimeSuggestParams
 };

@@ -9,7 +9,9 @@ import type {
     AnimeRecommendParams,
     AnimeRecommendRes,
     AnimeHotRankParams,
-    AnimeHotRankRes
+    AnimeHotRankRes,
+    AnimeSuggestParams,
+    AnimeSuggestRes
 } from '@/types';
 
 const CLIENT_PREFIX = import.meta.env.VITE_CLIENT_PREFIX;
@@ -37,10 +39,15 @@ const getAnimeRecommend = (params: AnimeRecommendParams) => {
     return HttpClient.get<AnimeRecommendRes>(`${prefix}/recommend/${id}`);
 };
 
+const getAnimeSuggest = (params: AnimeSuggestParams) => {
+    return HttpClient.get<AnimeSuggestRes>(`${prefix}/suggest`, params);
+};
+
 export {
     getAnimeOptions,
     guessAnimeYouLike,
     getAnimeDetail,
     getAnimeRecommend,
-    getAnimeHotRank
+    getAnimeHotRank,
+    getAnimeSuggest
 };

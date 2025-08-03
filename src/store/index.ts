@@ -4,3 +4,5 @@ export * from '@/store/anime';
 export * from '@/store/sidebar';
 export * from '@/store/rank';
 export * from '@/store/guide';
+export * from '@/store/search-history';
+export * from '@/store/search-suggest';

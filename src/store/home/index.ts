@@ -10,6 +10,12 @@ import {
 
 const DEFAULT_PAGE_SIZE = 10;
 
+// 定义加载延迟时间（毫秒）
+const LOADING_DELAY = import.meta.env.VITE_LOADING_DELAY;
+
+// 闭包变量用于管理计时器
+let loadMoreTimer: NodeJS.Timeout | null = null;
+
 const useHomeStore = create<HomeState & HomeAction>((set, get) => ({
     initialLoading: true,
     banners: [],
@@ -63,17 +69,25 @@ const useHomeStore = create<HomeState & HomeAction>((set, get) => ({
         // 检查是否正在加载或没有更多数据
         if (sectionState.loading || !hasMore) return;
 
+        // 清除之前的计时器
+        if (loadMoreTimer) clearTimeout(loadMoreTimer);
+
+        // 设置延迟显示加载状态
+        loadMoreTimer = setTimeout(() => {
+            set({ recommended: { ...sectionState, loading: true } });
+        }, LOADING_DELAY);
+
         // 计算下一页
         const nextPage = sectionState.page + 1;
 
         try {
-            // 设置加载状态
-            set({ recommended: { ...sectionState, loading: true } });
-
             const { data } = await guessAnimeYouLike({
                 page: nextPage,
                 pageSize: DEFAULT_PAGE_SIZE
             });
+
+            // 请求完成时清除计时器
+            if (loadMoreTimer) clearTimeout(loadMoreTimer);
 
             // 更新状态（保留现有视频，追加新视频）
             set({
@@ -86,6 +100,8 @@ const useHomeStore = create<HomeState & HomeAction>((set, get) => ({
                 }
             });
         } catch (error) {
+            // 请求完成时清除计时器
+            if (loadMoreTimer) clearTimeout(loadMoreTimer);
             set({ recommended: { ...sectionState, loading: false } });
         }
     }
