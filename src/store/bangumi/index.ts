@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { GuideState, GuideAction } from '@/types';
-import { getAnimeGuideList } from '@/apis';
+import type { BangumiState, BangumiAction } from '@/types';
+import { getAnimeTag, getAnimeBangumi } from '@/apis';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -11,17 +11,21 @@ const LOADING_DELAY = import.meta.env.VITE_LOADING_DELAY;
 let fetchTimer: NodeJS.Timeout | null = null;
 let loadMoreTimer: NodeJS.Timeout | null = null;
 
-const useGuideStore = create<GuideState & GuideAction>((set, get) => ({
+const useBangumiStore = create<BangumiState & BangumiAction>((set, get) => ({
+    tags: [],
+
     loading: false,
     list: [],
     page: 1,
     pageSize: DEFAULT_PAGE_SIZE,
     total: 0,
-    updateDay: new Date().getDay().toString(),
 
-    fetchData: async () => {
-        const { updateDay } = get();
+    fetchTagData: async () => {
+        const tags = await getAnimeTag();
+        set({ tags: tags.data });
+    },
 
+    fetchData: async params => {
         // 清除之前的计时器
         if (fetchTimer) clearTimeout(fetchTimer);
 
@@ -31,30 +35,31 @@ const useGuideStore = create<GuideState & GuideAction>((set, get) => ({
         }, LOADING_DELAY);
 
         try {
-            const ranks = await getAnimeGuideList({
-                updateDay,
+            const animes = await getAnimeBangumi({
                 page: 1,
-                pageSize: DEFAULT_PAGE_SIZE * 2
+                pageSize: DEFAULT_PAGE_SIZE * 2,
+                ...params
             });
 
             // 请求完成时清除计时器
             if (fetchTimer) clearTimeout(fetchTimer);
 
             set({
-                list: ranks.data.rows,
+                list: animes.data.rows,
                 page: 1,
                 pageSize: DEFAULT_PAGE_SIZE,
-                total: ranks.data.total || 0,
+                total: animes.data.total || 0,
                 loading: false
             });
         } catch (error) {
+            // 请求完成时清除计时器
             if (fetchTimer) clearTimeout(fetchTimer);
             set({ loading: false });
         }
     },
 
-    loadMore: async () => {
-        const { list, total, loading, page, updateDay } = get();
+    loadMore: async params => {
+        const { list, total, loading, page } = get();
         const loadedCount = list.length;
         const hasMore = loadedCount < total;
         // 检查是否正在加载或没有更多数据
@@ -72,10 +77,10 @@ const useGuideStore = create<GuideState & GuideAction>((set, get) => ({
         const nextPage = page + 1;
 
         try {
-            const ranks = await getAnimeGuideList({
-                updateDay,
+            const ranks = await getAnimeBangumi({
                 page: nextPage,
-                pageSize: DEFAULT_PAGE_SIZE
+                pageSize: DEFAULT_PAGE_SIZE,
+                ...params
             });
 
             // 请求完成时清除计时器
@@ -94,13 +99,7 @@ const useGuideStore = create<GuideState & GuideAction>((set, get) => ({
             if (loadMoreTimer) clearTimeout(loadMoreTimer);
             set({ loading: false });
         }
-    },
-
-    setUpdateDay: (updateDay: string) => {
-        const { fetchData } = get();
-        set({ updateDay });
-        fetchData();
     }
 }));
 
-export { useGuideStore };
+export { useBangumiStore };

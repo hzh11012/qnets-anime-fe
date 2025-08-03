@@ -11,3 +11,4 @@ export * from '@/apis/message';
 export * from '@/apis/video';
 export * from '@/apis/video-history';
 export * from '@/apis/guide';
+export * from '@/apis/tag';

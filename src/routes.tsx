@@ -95,6 +95,10 @@ const staticRoutes: RouteObject[] = [
     {
         path: '/',
         loader: authLoader,
+        shouldRevalidate: ({ currentUrl, nextUrl }) => {
+            // 仅当路径变化时重新验证
+            return currentUrl.pathname !== nextUrl.pathname;
+        },
         Component: () => (
             <WithLayout>
                 <Layout />
@@ -107,6 +111,13 @@ const staticRoutes: RouteObject[] = [
                 index: true,
                 lazy: async () => ({
                     Component: (await import('@/pages/home/index')).default
+                })
+            },
+            {
+                path: 'bangumi',
+                index: true,
+                lazy: async () => ({
+                    Component: (await import('@/pages/bangumi/index')).default
                 })
             },
             {
@@ -134,6 +145,10 @@ const staticRoutes: RouteObject[] = [
         loader: async (ctx: any) => {
             await authLoader();
             await videoLoader(ctx);
+        },
+        shouldRevalidate: ({ currentUrl, nextUrl }) => {
+            // 仅当路径变化时重新验证
+            return currentUrl.pathname !== nextUrl.pathname;
         },
         element: (
             <WithVideoLayout>

@@ -6,3 +6,4 @@ export * from '@/store/rank';
 export * from '@/store/guide';
 export * from '@/store/search-history';
 export * from '@/store/search-suggest';
+export * from '@/store/bangumi';

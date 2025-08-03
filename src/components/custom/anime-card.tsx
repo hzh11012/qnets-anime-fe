@@ -6,7 +6,7 @@ interface AnimeCardProps extends AnimeCardSkeletonProps {
     image: string;
     title: string;
     remark?: string;
-    tip: string;
+    tip?: string;
     onClick: () => void;
 }
 
@@ -81,13 +81,15 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
                 }}
                 onClick={onClick}
             >
-                <div
-                    className={cn(
-                        'absolute z-2 text-white right-2 bottom-1 text-xs'
-                    )}
-                >
-                    {tip}
-                </div>
+                {tip && (
+                    <div
+                        className={cn(
+                            'absolute z-2 text-white right-2 bottom-1 text-xs'
+                        )}
+                    >
+                        {tip}
+                    </div>
+                )}
                 <div
                     className={cn(
                         'absolute -bottom-0.5 z-1 w-full h-10 bg-card-cover'

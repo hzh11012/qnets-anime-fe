@@ -65,4 +65,53 @@ const formatVideoTime = (time: number) => {
     }
 };
 
-export { cn, formatDate, formateNumber, getResponsiveClasses, formatVideoTime };
+// 生成年份选项数组
+const generateYearOptions = () => {
+    // 获取当前年份
+    const currentYear = new Date().getFullYear();
+    const options = [
+        {
+            label: '全部年份',
+            value: ''
+        }
+    ];
+
+    const tenYearsAgo = Math.floor(currentYear / 10) * 10;
+    const twentyYearsAgo = Math.floor((currentYear - 30) / 5) * 5;
+
+    let startYear = Math.floor((currentYear - 10) / 5) * 5;
+
+    for (let i = 0; i < currentYear - startYear - 4; i++) {
+        const year = currentYear - i;
+        options.push({ label: `${year}`, value: `[${year},${year + 1})` });
+    }
+
+    while (startYear > twentyYearsAgo) {
+        const endYear = startYear + 4;
+
+        if (endYear <= tenYearsAgo) {
+            options.push({
+                label: `${endYear}-${startYear}`,
+                value: `[${startYear},${endYear + 1})`
+            });
+        }
+
+        startYear -= 5;
+    }
+
+    options.push({
+        label: '更早',
+        value: `[,${startYear + 5})`
+    });
+
+    return options;
+};
+
+export {
+    cn,
+    formatDate,
+    formateNumber,
+    getResponsiveClasses,
+    formatVideoTime,
+    generateYearOptions
+};

@@ -12,7 +12,7 @@ import AnimeGuess from '@/pages/home/anime-guess';
 
 const ANIME_TYPES_MAP: Record<number, string> = {
     0: '剧场版推荐',
-    1: '日漫推荐',
+    1: '日番推荐',
     2: '美漫推荐',
     3: '国创推荐',
     4: '里番推荐'
@@ -98,7 +98,7 @@ const Home: React.FC = () => {
     };
 
     const handleAllClick = (type: number) => {
-        navigate(`search?type=${type}`);
+        navigate(`bangumi?type=${type}`);
     };
 
     const handleTopicAllClick = () => {

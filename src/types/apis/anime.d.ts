@@ -121,6 +121,31 @@ interface AnimeSuggestRes {
     rows: AnimeSuggestItem[];
 }
 
+interface AnimeBangumiItem {
+    id: string;
+    name: string;
+    coverUrl: string;
+    status: number;
+    videoCount: number;
+    videoId?: string;
+}
+
+interface AnimeBangumiParams {
+    page?: number;
+    pageSize?: number;
+    order?: string;
+    type?: string;
+    tag?: string;
+    status?: string;
+    year?: string;
+    month?: string;
+}
+
+interface AnimeBangumiRes {
+    total: number;
+    rows: AnimeBangumiItem[];
+}
+
 export {
     AnimeOptionsRes,
     AnimeOption,
@@ -138,5 +163,8 @@ export {
     AnimeHotRankParams,
     AnimeSuggestItem,
     AnimeSuggestRes,
-    AnimeSuggestParams
+    AnimeSuggestParams,
+    AnimeBangumiItem,
+    AnimeBangumiRes,
+    AnimeBangumiParams
 };

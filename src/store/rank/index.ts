@@ -30,7 +30,7 @@ const useRankStore = create<RankState & RankAction>((set, get) => ({
         try {
             const ranks = await getAnimeHotRank({
                 page: 1,
-                pageSize: DEFAULT_PAGE_SIZE
+                pageSize: DEFAULT_PAGE_SIZE * 2
             });
 
             // 请求完成时清除计时器
