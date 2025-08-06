@@ -5,36 +5,59 @@ import BangumiSelect from '@/pages/bangumi/bangumi-select';
 import { useBangumiStore } from '@/store';
 import AnimeBangumi from './anime-bangumi';
 
-const Bangumi: React.FC = () => {
+const useBangumi = () => {
     const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
 
-    const order = searchParams.get('order') || '';
-    const type = searchParams.get('type') || '';
-    const tag = searchParams.get('tag') || '';
-    const status = searchParams.get('status') || '';
-    const year = searchParams.get('year') || '';
-    const month = searchParams.get('month') || '';
+    const [searchParams, setSearchParams] = useSearchParams();
+    const order = searchParams.get('order') || undefined;
+    const type = searchParams.get('type') || undefined;
+    const tag = searchParams.get('tag') || undefined;
+    const status = searchParams.get('status') || undefined;
+    const year = searchParams.get('year') || undefined;
+    const month = searchParams.get('month') || undefined;
 
     const loading = useBangumiStore(state => state.loading);
-    const animes = useBangumiStore(state => state.list);
-    const total = useBangumiStore(state => state.total);
+    const list = useBangumiStore(state => state.list);
+    const hasMore = useBangumiStore(state => state.hasMore);
     const fetchData = useBangumiStore(state => state.fetchData);
     const loadMore = useBangumiStore(state => state.loadMore);
+    const reset = useBangumiStore(state => state.reset);
 
     useEffect(() => {
         fetchData({
-            order: order || undefined,
-            type: type || undefined,
-            tag: tag || undefined,
-            status: status || undefined,
-            year: year || undefined,
-            month: month || undefined
+            order: order,
+            type: type,
+            tag: tag,
+            status: status,
+            year: year,
+            month: month
         });
-    }, [order, type, tag, status, year, month, fetchData]);
+
+        return () => {
+            reset();
+        };
+    }, [order, type, tag, status, year, month, fetchData, reset]);
+
+    const handleLoadMore = useCallback(() => {
+        loadMore({
+            order: order,
+            type: type,
+            tag: tag,
+            status: status,
+            year: year,
+            month: month
+        });
+    }, [order, type, tag, status, year, month, loadMore]);
+
+    const handleAnimeClick = useCallback(
+        (id: string) => {
+            id && navigate(`/anime/${id}`);
+        },
+        [navigate]
+    );
 
     // 更新单个参数（保留其他参数）
-    const updateParam = useCallback(
+    const handleParamsChange = useCallback(
         (key: string, value: string) => {
             // 创建当前查询参数的可修改副本
             const params = new URLSearchParams(searchParams);
@@ -51,20 +74,37 @@ const Bangumi: React.FC = () => {
         [searchParams, setSearchParams]
     );
 
-    const handleAnimeClick = (id: string) => {
-        id && navigate(`/anime/${id}`);
+    return {
+        order: order || '',
+        type: type || '',
+        tag: tag || '',
+        status: status || '',
+        year: year || '',
+        month: month || '',
+        loading,
+        list,
+        hasMore,
+        handleLoadMore,
+        handleAnimeClick,
+        handleParamsChange
     };
+};
 
-    const handleLoadMore = useCallback(() => {
-        loadMore({
-            order: order || undefined,
-            type: type || undefined,
-            tag: tag || undefined,
-            status: status || undefined,
-            year: year || undefined,
-            month: month || undefined
-        });
-    }, [order, type, tag, status, year, month, loadMore]);
+const Bangumi: React.FC = () => {
+    const {
+        order,
+        type,
+        tag,
+        status,
+        year,
+        month,
+        loading,
+        list,
+        hasMore,
+        handleLoadMore,
+        handleAnimeClick,
+        handleParamsChange
+    } = useBangumi();
 
     return (
         <div
@@ -80,11 +120,11 @@ const Bangumi: React.FC = () => {
                 status={status}
                 year={year}
                 month={month}
-                onChange={updateParam}
+                onChange={handleParamsChange}
             />
             <AnimeBangumi
-                list={animes}
-                total={total}
+                list={list}
+                hasMore={hasMore}
                 loading={loading}
                 onLoadMore={handleLoadMore}
                 onAnimeClick={handleAnimeClick}
@@ -92,5 +132,7 @@ const Bangumi: React.FC = () => {
         </div>
     );
 };
+
+Bangumi.displayName = 'Bangumi';
 
 export default Bangumi;

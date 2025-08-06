@@ -102,4 +102,6 @@ const AnimeRating: React.FC<AnimeRatingProps> = ({
     );
 };
 
+AnimeRating.displayName = 'AnimeRating';
+
 export default AnimeRating;

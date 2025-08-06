@@ -1,14 +1,13 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { BangumiState, BangumiAction } from '@/types';
-import { getAnimeTag, getAnimeBangumi } from '@/apis';
+import type { TopicState, TopicAction } from '@/types';
+import { getTopicList } from '@/apis';
 
 const DEFAULT_PAGE_SIZE = 10;
 const LOADING_DELAY = import.meta.env.VITE_LOADING_DELAY;
 
-const useBangumiStore = create<BangumiState & BangumiAction>()(
+const useTopicStore = create<TopicState & TopicAction>()(
     devtools((set, get) => ({
-        tags: [],
         loading: false,
         list: [],
         page: 1,
@@ -16,23 +15,15 @@ const useBangumiStore = create<BangumiState & BangumiAction>()(
         total: 0,
         hasMore: true,
 
-        fetchTagData: async () => {
-            try {
-                const tags = await getAnimeTag();
-                set({ tags: tags.data });
-            } catch (error) {}
-        },
-
-        fetchData: async params => {
+        fetchData: async () => {
             const { pageSize } = get();
 
             try {
                 set({ loading: true });
 
-                const response = await getAnimeBangumi({
+                const response = await getTopicList({
                     page: 1,
-                    pageSize: pageSize * 2,
-                    ...params
+                    pageSize: pageSize * 2
                 });
 
                 const { rows = [], total = 0 } = response.data;
@@ -48,7 +39,7 @@ const useBangumiStore = create<BangumiState & BangumiAction>()(
             }
         },
 
-        loadMore: async params => {
+        loadMore: async () => {
             const { list, loading, page, pageSize, hasMore } = get();
 
             // 检查是否可以加载更多
@@ -64,10 +55,9 @@ const useBangumiStore = create<BangumiState & BangumiAction>()(
 
                 const nextPage = page + 1;
 
-                const response = await getAnimeBangumi({
+                const response = await getTopicList({
                     page: nextPage,
-                    pageSize,
-                    ...params
+                    pageSize
                 });
 
                 // 清除定时器
@@ -105,4 +95,4 @@ const useBangumiStore = create<BangumiState & BangumiAction>()(
     }))
 );
 
-export { useBangumiStore };
+export { useTopicStore };

@@ -1,18 +1,18 @@
-import type { AnimeHotRank } from '@/types';
+import type { TopicOption } from '@/types';
 
-interface RankState {
+interface TopicState {
     loading: boolean;
-    list: AnimeHotRank[];
+    list: TopicOption[];
     page: number;
     pageSize: number;
     total: number;
     hasMore: boolean;
 }
 
-interface RankAction {
+interface TopicAction {
     fetchData: () => Promise<void>;
     loadMore: () => Promise<void>;
     reset: () => void;
 }
 
-export { RankState, RankAction };
+export { TopicState, TopicAction };

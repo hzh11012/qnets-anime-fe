@@ -1,18 +1,18 @@
 import React, { useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { useRankStore } from '@/store';
-import AnimeRank from '@/pages/rank/anime-rank';
+import { useTopicStore } from '@/store';
+import AnimeTopic from '@/pages/topic/anime-topic';
 
-const useRank = () => {
+const useTopic = () => {
     const navigate = useNavigate();
 
-    const loading = useRankStore(state => state.loading);
-    const list = useRankStore(state => state.list);
-    const hasMore = useRankStore(state => state.hasMore);
-    const fetchData = useRankStore(state => state.fetchData);
-    const loadMore = useRankStore(state => state.loadMore);
-    const reset = useRankStore(state => state.reset);
+    const loading = useTopicStore(state => state.loading);
+    const list = useTopicStore(state => state.list);
+    const hasMore = useTopicStore(state => state.hasMore);
+    const fetchData = useTopicStore(state => state.fetchData);
+    const loadMore = useTopicStore(state => state.loadMore);
+    const reset = useTopicStore(state => state.reset);
 
     useEffect(() => {
         fetchData();
@@ -26,9 +26,9 @@ const useRank = () => {
         loadMore();
     }, [loadMore]);
 
-    const handleAnimeClick = useCallback(
+    const handleTopicClick = useCallback(
         (id: string) => {
-            id && navigate(`/anime/${id}`);
+            id && navigate(`/topic/${id}`);
         },
         [navigate]
     );
@@ -38,13 +38,13 @@ const useRank = () => {
         list,
         hasMore,
         handleLoadMore,
-        handleAnimeClick
+        handleTopicClick
     };
 };
 
-const Rank: React.FC = () => {
-    const { loading, list, hasMore, handleLoadMore, handleAnimeClick } =
-        useRank();
+const Topic: React.FC = () => {
+    const { loading, list, hasMore, handleLoadMore, handleTopicClick } =
+        useTopic();
 
     return (
         <div
@@ -53,18 +53,18 @@ const Rank: React.FC = () => {
                 'transition-[margin] duration-200'
             )}
         >
-            <AnimeRank
-                title="热门动漫排行"
+            <AnimeTopic
+                title="专题推荐"
                 loading={loading}
                 list={list}
                 hasMore={hasMore}
                 onLoadMore={handleLoadMore}
-                onAnimeClick={handleAnimeClick}
+                onTopicClick={handleTopicClick}
             />
         </div>
     );
 };
 
-Rank.displayName = 'Rank';
+Topic.displayName = 'Topic';
 
-export default Rank;
+export default Topic;

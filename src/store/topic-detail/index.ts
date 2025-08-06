@@ -1,38 +1,39 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { BangumiState, BangumiAction } from '@/types';
-import { getAnimeTag, getAnimeBangumi } from '@/apis';
+import type { TopicDetailState, TopicDetailAction } from '@/types';
+import { getTopicDetail, getTopicDetailList } from '@/apis';
 
 const DEFAULT_PAGE_SIZE = 10;
 const LOADING_DELAY = import.meta.env.VITE_LOADING_DELAY;
 
-const useBangumiStore = create<BangumiState & BangumiAction>()(
+const useTopicDetailStore = create<TopicDetailState & TopicDetailAction>()(
     devtools((set, get) => ({
-        tags: [],
+        detail: null,
         loading: false,
         list: [],
         page: 1,
         pageSize: DEFAULT_PAGE_SIZE,
         total: 0,
-        hasMore: true,
 
-        fetchTagData: async () => {
+        fetachTopicDetail: async id => {
             try {
-                const tags = await getAnimeTag();
-                set({ tags: tags.data });
-            } catch (error) {}
+                const topicDetail = await getTopicDetail({ id });
+                set({ detail: topicDetail.data });
+            } catch (error) {
+                throw error;
+            }
         },
 
-        fetchData: async params => {
+        fetchData: async id => {
             const { pageSize } = get();
 
             try {
                 set({ loading: true });
 
-                const response = await getAnimeBangumi({
+                const response = await getTopicDetailList({
+                    id,
                     page: 1,
-                    pageSize: pageSize * 2,
-                    ...params
+                    pageSize: pageSize * 2
                 });
 
                 const { rows = [], total = 0 } = response.data;
@@ -48,7 +49,7 @@ const useBangumiStore = create<BangumiState & BangumiAction>()(
             }
         },
 
-        loadMore: async params => {
+        loadMore: async id => {
             const { list, loading, page, pageSize, hasMore } = get();
 
             // 检查是否可以加载更多
@@ -64,10 +65,10 @@ const useBangumiStore = create<BangumiState & BangumiAction>()(
 
                 const nextPage = page + 1;
 
-                const response = await getAnimeBangumi({
+                const response = await getTopicDetailList({
+                    id,
                     page: nextPage,
-                    pageSize,
-                    ...params
+                    pageSize
                 });
 
                 // 清除定时器
@@ -77,6 +78,7 @@ const useBangumiStore = create<BangumiState & BangumiAction>()(
                 const newList = [...list, ...rows];
                 const newHasMore = newList.length < total;
 
+                // 更新状态
                 set({
                     list: newList,
                     page: nextPage,
@@ -94,6 +96,7 @@ const useBangumiStore = create<BangumiState & BangumiAction>()(
 
         reset: () => {
             set({
+                detail: null,
                 loading: false,
                 list: [],
                 page: 1,
@@ -105,4 +108,4 @@ const useBangumiStore = create<BangumiState & BangumiAction>()(
     }))
 );
 
-export { useBangumiStore };
+export { useTopicDetailStore };

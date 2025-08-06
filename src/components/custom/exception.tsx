@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { cn } from '@/lib/utils';
 import NotFound from '@/assets/not-found.svg?react';
 import Ban from '@/assets/ban.svg?react';
@@ -12,7 +12,7 @@ interface ExceptionProps {
     className?: string;
 }
 
-const Exception: React.FC<ExceptionProps> = ({ type, className }) => {
+const Exception: React.FC<ExceptionProps> = memo(({ type, className }) => {
     return (
         <div
             className={cn(
@@ -49,6 +49,8 @@ const Exception: React.FC<ExceptionProps> = ({ type, className }) => {
             )}
         </div>
     );
-};
+});
+
+Exception.displayName = 'Exception';
 
 export default Exception;

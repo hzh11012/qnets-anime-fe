@@ -1,106 +1,148 @@
 import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
 import type { GuideState, GuideAction } from '@/types';
 import { getAnimeGuideList } from '@/apis';
 
 const DEFAULT_PAGE_SIZE = 10;
-
-// 定义加载延迟时间（毫秒）
 const LOADING_DELAY = import.meta.env.VITE_LOADING_DELAY;
 
-// 闭包变量用于管理计时器
-let fetchTimer: NodeJS.Timeout | null = null;
-let loadMoreTimer: NodeJS.Timeout | null = null;
+const useGuideStore = create<GuideState & GuideAction>()(
+    devtools((set, get) => ({
+        loading: false,
+        list: [],
+        page: 1,
+        pageSize: DEFAULT_PAGE_SIZE,
+        total: 0,
+        updateDay: new Date().getDay().toString(),
+        hasMore: true,
 
-const useGuideStore = create<GuideState & GuideAction>((set, get) => ({
-    loading: false,
-    list: [],
-    page: 1,
-    pageSize: DEFAULT_PAGE_SIZE,
-    total: 0,
-    updateDay: new Date().getDay().toString(),
+        fetchData: async () => {
+            const { pageSize, updateDay } = get();
 
-    fetchData: async () => {
-        const { updateDay } = get();
+            try {
+                set({ loading: true });
 
-        // 清除之前的计时器
-        if (fetchTimer) clearTimeout(fetchTimer);
+                const response = await getAnimeGuideList({
+                    updateDay,
+                    page: 1,
+                    pageSize: pageSize * 2
+                });
 
-        // 设置延迟显示加载状态
-        fetchTimer = setTimeout(() => {
-            set({ loading: true });
-        }, LOADING_DELAY);
+                const { rows = [], total = 0 } = response.data;
+                const hasMore = rows.length < total;
+                set({
+                    list: rows,
+                    total: total,
+                    loading: false,
+                    hasMore
+                });
+            } catch (error) {
+                set({ loading: false });
+            }
+        },
 
-        try {
-            const ranks = await getAnimeGuideList({
-                updateDay,
-                page: 1,
-                pageSize: DEFAULT_PAGE_SIZE * 2
-            });
+        loadMore: async () => {
+            const { list, loading, page, pageSize, updateDay, hasMore } = get();
 
-            // 请求完成时清除计时器
-            if (fetchTimer) clearTimeout(fetchTimer);
+            // 检查是否可以加载更多
+            if (loading || !hasMore) return;
 
+            let loadingTimer: NodeJS.Timeout | null = null;
+
+            try {
+                // 延迟显示加载状态
+                loadingTimer = setTimeout(() => {
+                    set({ loading: true });
+                }, LOADING_DELAY);
+
+                const nextPage = page + 1;
+
+                const response = await getAnimeGuideList({
+                    updateDay,
+                    page: nextPage,
+                    pageSize
+                });
+
+                // 清除定时器
+                if (loadingTimer) clearTimeout(loadingTimer);
+
+                const { rows = [], total = 0 } = response.data;
+                const newList = [...list, ...rows];
+                const newHasMore = newList.length < total;
+
+                set({
+                    list: newList,
+                    page: nextPage,
+                    total,
+                    loading: false,
+                    hasMore: newHasMore
+                });
+            } catch (error) {
+                // 清除定时器
+                if (loadingTimer) clearTimeout(loadingTimer);
+
+                set({ loading: false });
+            }
+        },
+
+        toggleDay: async (updateDay: string) => {
             set({
-                list: ranks.data.rows,
+                loading: false,
+                list: [],
                 page: 1,
                 pageSize: DEFAULT_PAGE_SIZE,
-                total: ranks.data.total || 0,
-                loading: false
-            });
-        } catch (error) {
-            if (fetchTimer) clearTimeout(fetchTimer);
-            set({ loading: false });
-        }
-    },
-
-    loadMore: async () => {
-        const { list, total, loading, page, updateDay } = get();
-        const loadedCount = list.length;
-        const hasMore = loadedCount < total;
-        // 检查是否正在加载或没有更多数据
-        if (loading || !hasMore) return;
-
-        // 清除之前的计时器
-        if (loadMoreTimer) clearTimeout(loadMoreTimer);
-
-        // 设置延迟显示加载状态
-        loadMoreTimer = setTimeout(() => {
-            set({ loading: true });
-        }, LOADING_DELAY);
-
-        // 计算下一页
-        const nextPage = page + 1;
-
-        try {
-            const ranks = await getAnimeGuideList({
-                updateDay,
-                page: nextPage,
-                pageSize: DEFAULT_PAGE_SIZE
+                total: 0,
+                hasMore: true,
+                updateDay
             });
 
-            // 请求完成时清除计时器
-            if (loadMoreTimer) clearTimeout(loadMoreTimer);
+            const { pageSize } = get();
 
-            // 更新状态（保留现有视频，追加新视频）
+            let loadingTimer: NodeJS.Timeout | null = null;
+
+            try {
+                // 延迟显示加载状态
+                loadingTimer = setTimeout(() => {
+                    set({ loading: true });
+                }, LOADING_DELAY);
+
+                const response = await getAnimeGuideList({
+                    updateDay,
+                    page: 1,
+                    pageSize: pageSize * 2
+                });
+
+                // 清除定时器
+                if (loadingTimer) clearTimeout(loadingTimer);
+
+                const { rows = [], total = 0 } = response.data;
+                const hasMore = rows.length < total;
+                set({
+                    list: rows,
+                    total: total,
+                    loading: false,
+                    hasMore
+                });
+            } catch (error) {
+                // 清除定时器
+                if (loadingTimer) clearTimeout(loadingTimer);
+
+                set({ loading: false });
+            }
+        },
+
+        reset: () => {
             set({
-                list: [...list, ...(ranks.data.rows || [])],
-                page: nextPage,
+                loading: false,
+                list: [],
+                page: 1,
                 pageSize: DEFAULT_PAGE_SIZE,
-                total: ranks.data.total,
-                loading: false
+                total: 0,
+                hasMore: true,
+                updateDay: new Date().getDay().toString()
             });
-        } catch (error) {
-            // 请求完成时清除计时器
-            if (loadMoreTimer) clearTimeout(loadMoreTimer);
-            set({ loading: false });
         }
-    },
-
-    setUpdateDay: (updateDay: string) => {
-        const { fetchData } = get();
-        set({ updateDay });
-        fetchData();
-    }
-}));
+    }))
+);
 
 export { useGuideStore };

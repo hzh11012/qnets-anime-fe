@@ -1,24 +1,7 @@
-import React, { useCallback, useLayoutEffect, useMemo } from 'react';
+import React, { memo, useCallback, useLayoutEffect, useMemo } from 'react';
 import { cn, generateYearOptions } from '@/lib/utils';
 import { useUserStore } from '@/store';
 import { useBangumiStore } from '@/store';
-
-interface BangumiSelectProps {
-    order: string;
-    type: string;
-    tag: string;
-    status: string;
-    year: string;
-    month: string;
-    onChange: (key: string, value: string) => void;
-}
-
-interface BangumiListProps {
-    type: string;
-    value: string;
-    list: { label: string; value: string }[];
-    onChange: (key: string, value: string) => void;
-}
 
 const ORDER_LIST = [
     {
@@ -41,7 +24,7 @@ const ORDER_LIST = [
         label: '最高评分',
         value: '3'
     }
-];
+] as const;
 
 const ALL_TYPE_LIST = [
     {
@@ -68,7 +51,7 @@ const ALL_TYPE_LIST = [
         label: '里番',
         value: '4'
     }
-];
+] as const;
 
 const NORMAL_TYPE_LIST = ALL_TYPE_LIST.slice(0, 5);
 
@@ -89,7 +72,7 @@ const STATUS_LIST = [
         label: '即将开播',
         value: '0'
     }
-];
+] as const;
 
 const YEAR_LIST = generateYearOptions();
 
@@ -114,7 +97,14 @@ const MONTH_LIST = [
         label: '10月',
         value: '3'
     }
-];
+] as const;
+
+interface BangumiListProps {
+    type: string;
+    value: string;
+    list: readonly { label: string; value: string }[];
+    onChange: (key: string, value: string) => void;
+}
 
 const BangumiList: React.FC<BangumiListProps> = ({
     type,
@@ -157,15 +147,19 @@ const BangumiList: React.FC<BangumiListProps> = ({
     );
 };
 
-const BangumiSelect: React.FC<BangumiSelectProps> = ({
-    order,
-    type,
-    tag,
-    status,
-    year,
-    month,
-    onChange
-}) => {
+BangumiList.displayName = 'BangumiList';
+
+interface BangumiSelectProps {
+    order: string;
+    type: string;
+    tag: string;
+    status: string;
+    year: string;
+    month: string;
+    onChange: (key: string, value: string) => void;
+}
+
+const useBangumiSelect = () => {
     const tags = useBangumiStore(state => state.tags);
     const fetchTagData = useBangumiStore(state => state.fetchTagData);
     const isAllowViewHentai = useUserStore(state => state.isAllowViewHentai);
@@ -176,53 +170,61 @@ const BangumiSelect: React.FC<BangumiSelectProps> = ({
 
     useLayoutEffect(() => {
         fetchTagData();
-    }, []);
+    }, [fetchTagData]);
 
-    return (
-        <div className={cn('flex flex-col gap-2.5 select-none')}>
-            <BangumiList
-                list={ORDER_LIST}
-                type="order"
-                value={order}
-                onChange={onChange}
-            />
-            <BangumiList
-                list={TYPE_LIST}
-                type="type"
-                value={type}
-                onChange={onChange}
-            />
-            <BangumiList
-                list={[
-                    {
-                        label: '全部风格',
-                        value: ''
-                    }
-                ].concat(tags)}
-                type="tag"
-                value={tag}
-                onChange={onChange}
-            />
-            <BangumiList
-                list={STATUS_LIST}
-                type="status"
-                value={status}
-                onChange={onChange}
-            />
-            <BangumiList
-                list={YEAR_LIST}
-                type="year"
-                value={year}
-                onChange={onChange}
-            />
-            <BangumiList
-                list={MONTH_LIST}
-                type="month"
-                value={month}
-                onChange={onChange}
-            />
-        </div>
-    );
+    return {
+        tags: [{ label: '全部风格', value: '' }].concat(tags),
+        TYPE_LIST
+    };
 };
+
+const BangumiSelect: React.FC<BangumiSelectProps> = memo(
+    ({ order, type, tag, status, year, month, onChange }) => {
+        const { tags, TYPE_LIST } = useBangumiSelect();
+
+        return (
+            <div className={cn('flex flex-col gap-2.5 select-none')}>
+                <BangumiList
+                    list={ORDER_LIST}
+                    type="order"
+                    value={order}
+                    onChange={onChange}
+                />
+                <BangumiList
+                    list={TYPE_LIST}
+                    type="type"
+                    value={type}
+                    onChange={onChange}
+                />
+                <BangumiList
+                    list={tags}
+                    type="tag"
+                    value={tag}
+                    onChange={onChange}
+                />
+                <BangumiList
+                    list={STATUS_LIST}
+                    type="status"
+                    value={status}
+                    onChange={onChange}
+                />
+                <BangumiList
+                    list={YEAR_LIST}
+                    type="year"
+                    value={year}
+                    onChange={onChange}
+                />
+                <BangumiList
+                    list={MONTH_LIST}
+                    type="month"
+                    value={month}
+                    onChange={onChange}
+                />
+            </div>
+        );
+    }
+);
+
+BangumiSelect.displayName = 'BangumiSelect';
 
 export default BangumiSelect;

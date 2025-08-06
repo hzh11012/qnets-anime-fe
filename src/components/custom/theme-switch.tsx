@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useTheme } from 'next-themes';
 import { Moon, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -11,7 +11,7 @@ interface ThemeSwitchProps {
     className?: string;
 }
 
-const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ className }) => {
+const ThemeSwitch: React.FC<ThemeSwitchProps> = memo(({ className }) => {
     const { theme, setTheme } = useTheme();
 
     return (
@@ -25,6 +25,6 @@ const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ className }) => {
             {theme === 'light' && <Moon size={22} />}
         </div>
     );
-};
+});
 
 export default ThemeSwitch;

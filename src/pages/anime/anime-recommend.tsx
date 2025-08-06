@@ -16,7 +16,12 @@ const AnimeRecommend: React.FC<AnimeRecommendProps> = ({
 }) => {
     if (!list?.length) return null;
 
-    const handleAnimeClick = (id: string) => onAnimeClick(id);
+    const handleAnimeClick = useCallback(
+        (id: string) => {
+            id && onAnimeClick(id);
+        },
+        [onAnimeClick]
+    );
 
     const getRemark = useCallback((item: AnimeRecommendOption) => {
         const { videoCount, status } = item;
@@ -45,8 +50,8 @@ const AnimeRecommend: React.FC<AnimeRecommendProps> = ({
                         collectionCount,
                         videoId = ''
                     } = item;
-
                     const remark = getRemark(item);
+
                     return (
                         <VideoCard
                             key={id}
@@ -67,5 +72,7 @@ const AnimeRecommend: React.FC<AnimeRecommendProps> = ({
         </div>
     );
 };
+
+AnimeRecommend.displayName = 'AnimeRecommend';
 
 export default AnimeRecommend;

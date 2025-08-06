@@ -1,12 +1,84 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, memo } from 'react';
 import { AnimeCard } from '@/components/custom/anime-card';
 import { Button } from '@/components/ui/button';
 import { cn, getResponsiveClasses } from '@/lib/utils';
 import type { AnimeOption } from '@/types';
 import { ChevronRight } from 'lucide-react';
 
+interface AnimeTypeHeaderProps {
+    title: string;
+    onClick: () => void;
+}
+
+const AnimeTypeHeader: React.FC<AnimeTypeHeaderProps> = memo(
+    ({ title, onClick }) => {
+        return (
+            <div className={cn('flex items-center justify-between mb-4')}>
+                <div className={cn('font-bold text-base leading-9')}>
+                    {title}
+                </div>
+                <Button
+                    variant="outline"
+                    className={cn('gap-1')}
+                    onClick={onClick}
+                >
+                    查看全部
+                    <ChevronRight />
+                </Button>
+            </div>
+        );
+    }
+);
+
+AnimeTypeHeader.displayName = 'AnimeTypeHeader';
+
+interface AnimeTypeListProps {
+    list: AnimeOption[];
+    maxCount: number;
+    getSubTitle: (item: AnimeOption) => string;
+    onAnimeClick: (id: string) => void;
+}
+
+const AnimeTypeList: React.FC<AnimeTypeListProps> = ({
+    list,
+    maxCount,
+    getSubTitle,
+    onAnimeClick
+}) => {
+    return (
+        <div
+            className={cn(
+                'grid gap-4 text-sm',
+                'md:flex md:items-center md:gap-6 grid-cols-3',
+                {
+                    '[&>*:nth-last-child(1)]:max-md:hidden':
+                        list.length === maxCount
+                }
+            )}
+        >
+            {list.map((item, index) => {
+                const { id, name, coverUrl, remark, videoId = '' } = item;
+                const tip = getSubTitle(item);
+
+                return (
+                    <AnimeCard
+                        key={id}
+                        className={getResponsiveClasses(index, 'vertical')}
+                        title={name}
+                        remark={remark}
+                        image={coverUrl}
+                        tip={tip}
+                        onClick={() => onAnimeClick(videoId)}
+                    />
+                );
+            })}
+        </div>
+    );
+};
+
+AnimeTypeList.displayName = 'AnimeTypeList';
+
 interface AnimeTypeProps {
-    type?: 'horizontal' | 'vertical';
     title: string;
     list: AnimeOption[];
     onAnimeClick: (id: string) => void;
@@ -15,7 +87,6 @@ interface AnimeTypeProps {
 }
 
 const AnimeType: React.FC<AnimeTypeProps> = ({
-    type = 'vertical',
     title,
     list,
     className,
@@ -25,14 +96,21 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
     if (!list?.length) return null;
 
     const { maxCount, displayList } = useMemo(() => {
-        const maxCount = type === 'vertical' ? 7 : 5;
+        const maxCount = 7;
         const displayList = list.slice(0, maxCount);
         return { maxCount, displayList };
-    }, [type, list]);
+    }, [list]);
 
-    const handleAnimeClick = (id: string) => onAnimeClick(id);
+    const handleAnimeClick = useCallback(
+        (id: string) => {
+            id && onAnimeClick(id);
+        },
+        [onAnimeClick]
+    );
 
-    const handleAllClick = () => onAllClick();
+    const handleAllAnimeClick = useCallback(() => {
+        onAllClick();
+    }, [onAllClick]);
 
     const getSubTitle = useCallback((item: AnimeOption) => {
         const { videoCount, status } = item;
@@ -55,51 +133,17 @@ const AnimeType: React.FC<AnimeTypeProps> = ({
                 className
             )}
         >
-            <div className={cn('flex items-center justify-between mb-4')}>
-                <div className={cn('font-bold text-base leading-9')}>{title}</div>
-                <Button
-                    variant="outline"
-                    className={cn('gap-1')}
-                    onClick={handleAllClick}
-                >
-                    查看全部
-                    <ChevronRight />
-                </Button>
-            </div>
-            <div
-                className={cn(
-                    'grid gap-4 text-sm',
-                    'md:flex md:items-center md:gap-6',
-                    {
-                        'grid-cols-3': type === 'vertical',
-                        'grid-cols-2': type === 'horizontal'
-                    },
-                    {
-                        '[&>*:nth-last-child(1)]:max-md:hidden':
-                            displayList?.length === maxCount
-                    }
-                )}
-            >
-                {displayList.map((item, index) => {
-                    const { id, name, coverUrl, remark, videoId = '' } = item;
-                    const tip = getSubTitle(item);
-
-                    return (
-                        <AnimeCard
-                            type={type}
-                            key={id}
-                            className={getResponsiveClasses(index, type)}
-                            title={name}
-                            remark={remark}
-                            image={coverUrl}
-                            tip={tip}
-                            onClick={() => handleAnimeClick(videoId)}
-                        />
-                    );
-                })}
-            </div>
+            <AnimeTypeHeader title={title} onClick={handleAllAnimeClick} />
+            <AnimeTypeList
+                list={displayList}
+                maxCount={maxCount}
+                getSubTitle={getSubTitle}
+                onAnimeClick={handleAnimeClick}
+            />
         </div>
     );
 };
+
+AnimeType.displayName = 'AnimeType';
 
 export default AnimeType;

@@ -1,41 +1,108 @@
-import React, { useCallback, useMemo } from 'react';
-import { AnimeCard, AnimeCardSkeleton } from '@/components/custom/anime-card';
+import React, { memo, useCallback, useMemo } from 'react';
+import { AnimeCard } from '@/components/custom/anime-card';
 import { cn } from '@/lib/utils';
 import type { AnimeHotRank } from '@/types';
 import { useInView } from 'react-intersection-observer';
 import Exception from '@/components/custom/exception';
+import AnimeSkeleton from '@/components/custom/anime-skeleton';
 
-interface AnimeRankProps {
+interface AnimeRankHeaderProps {
     title: string;
+    description?: string;
+}
+
+const AnimeRankHeader: React.FC<AnimeRankHeaderProps> = memo(
+    ({ title, description }) => {
+        return (
+            <div className={cn('flex flex-col justify-center mb-4')}>
+                <div className={cn('font-bold text-base leading-9')}>
+                    {title}
+                </div>
+                {description && (
+                    <div className={cn('text-muted-foreground text-sm')}>
+                        简介：{description}
+                    </div>
+                )}
+            </div>
+        );
+    }
+);
+
+AnimeRankHeader.displayName = 'AnimeRankHeader';
+
+interface AnimeRankListProps {
+    ref: (node?: Element | null) => void;
     list: AnimeHotRank[];
-    total: number;
     loading: boolean;
+    hasMore: boolean;
+    getSubTitle: (item: AnimeHotRank) => string;
+    onAnimeClick: (id: string) => void;
+}
+
+const AnimeRankList: React.FC<AnimeRankListProps> = ({
+    ref,
+    list,
+    loading,
+    hasMore,
+    getSubTitle,
+    onAnimeClick
+}) => {
+    return (
+        <div
+            className={cn(
+                'grid gap-4 grid-cols-7 text-sm',
+                'md:gap-6',
+                'max-[1500px]:grid-cols-6',
+                'max-[1300px]:grid-cols-5',
+                'max-[1100px]:grid-cols-4',
+                'max-[855px]:grid-cols-3',
+                'max-md:grid-cols-3'
+            )}
+        >
+            {list.map(item => {
+                const { id, name, remark, coverUrl, videoId = '' } = item;
+                const tip = getSubTitle(item);
+
+                return (
+                    <AnimeCard
+                        key={id}
+                        type="vertical"
+                        title={name}
+                        remark={remark}
+                        tip={tip}
+                        image={coverUrl}
+                        onClick={() => onAnimeClick(videoId)}
+                    />
+                );
+            })}
+            {loading && <AnimeSkeleton />}
+            {/* 触底加载的锚点 */}
+            {hasMore && <div ref={ref} style={{ height: 0 }} />}
+        </div>
+    );
+};
+
+AnimeRankList.displayName = 'AnimeRankList';
+
+interface AnimeRankProps extends AnimeRankHeaderProps {
+    list: AnimeHotRank[];
+    loading: boolean;
+    hasMore: boolean;
     onLoadMore: () => void;
     onAnimeClick: (id: string) => void;
     className?: string;
 }
 
-const AnimeRankSkeleton: React.FC<{ count?: number }> = ({ count = 10 }) => (
-    <>
-        {[...Array(count)].map((_, index) => (
-            <AnimeCardSkeleton type="vertical" key={index} />
-        ))}
-    </>
-);
-
 const AnimeRank: React.FC<AnimeRankProps> = ({
     title,
+    description,
     list,
-    total,
+    hasMore,
     className,
     loading,
     onLoadMore,
     onAnimeClick
 }) => {
-    const hasMore = useMemo(() => {
-        return list.length < total;
-    }, [list, total]);
-
     const { ref } = useInView({
         threshold: 0,
         onChange: inView => {
@@ -45,7 +112,12 @@ const AnimeRank: React.FC<AnimeRankProps> = ({
         }
     });
 
-    const handleAnimeClick = (id: string) => onAnimeClick(id);
+    const handleAnimeClick = useCallback(
+        (id: string) => {
+            id && onAnimeClick(id);
+        },
+        [onAnimeClick]
+    );
 
     const getSubTitle = useCallback((item: AnimeHotRank) => {
         const { videoCount, status } = item;
@@ -61,6 +133,11 @@ const AnimeRank: React.FC<AnimeRankProps> = ({
         return '即将开播';
     }, []);
 
+    const isEmpty = useMemo(
+        () => !list.length && !loading,
+        [list.length, loading]
+    );
+
     return (
         <div
             className={cn(
@@ -68,55 +145,23 @@ const AnimeRank: React.FC<AnimeRankProps> = ({
                 className
             )}
         >
-            <div className={cn('flex items-center mb-4')}>
-                <div className={cn('font-bold text-base leading-9')}>{title}</div>
-            </div>
-            {!list.length && !loading ? (
+            <AnimeRankHeader title={title} description={description} />
+            {isEmpty ? (
                 <Exception type="empty" />
             ) : (
-                <div
-                    className={cn(
-                        'grid gap-4 grid-cols-7 text-sm',
-                        'md:gap-6',
-                        'max-[1500px]:grid-cols-6',
-                        'max-[1300px]:grid-cols-5',
-                        'max-[1100px]:grid-cols-4',
-                        'max-[855px]:grid-cols-3',
-                        'max-md:grid-cols-3'
-                    )}
-                >
-                    {list.map(item => {
-                        const {
-                            id,
-                            name,
-                            remark,
-                            coverUrl,
-                            videoId = ''
-                        } = item;
-                        const tip = getSubTitle(item);
-
-                        return (
-                            <AnimeCard
-                                key={id}
-                                type="vertical"
-                                title={name}
-                                remark={remark}
-                                tip={tip}
-                                image={coverUrl}
-                                onClick={() => handleAnimeClick(videoId)}
-                            />
-                        );
-                    })}
-                    {loading && <AnimeRankSkeleton />}
-                    {/* 触底加载的锚点 */}
-                    <div
-                        ref={hasMore ? ref : undefined}
-                        style={{ height: 0 }}
-                    />
-                </div>
+                <AnimeRankList
+                    ref={ref}
+                    list={list}
+                    loading={loading}
+                    hasMore={hasMore}
+                    getSubTitle={getSubTitle}
+                    onAnimeClick={handleAnimeClick}
+                />
             )}
         </div>
     );
 };
+
+AnimeRank.displayName = 'AnimeRank';
 
 export default AnimeRank;

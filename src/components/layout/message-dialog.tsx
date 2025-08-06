@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Zod from 'zod';
@@ -18,6 +18,7 @@ import type { ZodFormValues } from '@/types';
 import FormTextarea from '@/components/custom/form/form-textarea';
 import FormRadio from '@/components/custom/form/form-radio';
 import { useSidebarStore } from '@/store';
+import { useDebounceFn } from 'ahooks';
 
 interface MessageDialogProps {
     children: React.ReactNode;
@@ -31,7 +32,9 @@ const schema = Zod.object({
     }),
     content: Zod.string({
         error: issue => (issue.input === undefined ? '不能为空' : '类型错误')
-    }).trim().min(1, '不能为空')
+    })
+        .trim()
+        .min(1, '不能为空')
 });
 
 const types = [
@@ -42,8 +45,8 @@ const types = [
 ];
 
 const MessageDialog: React.FC<MessageDialogProps> = ({ children }) => {
-    const loading = useSidebarStore(state => state.messageLoading);
-    const fetchMessage = useSidebarStore(state => state.fetchMessage);
+    const loading = useSidebarStore(state => state.message.loading);
+    const fetchData = useSidebarStore(state => state.message.fetchData);
 
     const [open, setOpen] = useState(false);
 
@@ -57,12 +60,19 @@ const MessageDialog: React.FC<MessageDialogProps> = ({ children }) => {
 
     const [type, content] = form.watch(['type', 'content']);
 
-    const handleSubmit = (values: FormValues) => {
-        fetchMessage(values, () => {
-            setOpen(false);
-            form.reset();
-        });
-    };
+    const { run: handleSubmit } = useDebounceFn(
+        (values: FormValues) => {
+            fetchData(values, () => {
+                setOpen(false);
+                form.reset();
+            });
+        },
+        { wait: 200 }
+    );
+
+    const isFormValid = useMemo(() => {
+        return type && content && !loading;
+    }, [type, content, loading]);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -98,7 +108,7 @@ const MessageDialog: React.FC<MessageDialogProps> = ({ children }) => {
                     <Button
                         variant="default"
                         className={'h-9 flex-1'}
-                        disabled={(!type || !content) && !loading}
+                        disabled={!isFormValid}
                         onClick={form.handleSubmit(handleSubmit)}
                     >
                         提交留言
@@ -108,5 +118,7 @@ const MessageDialog: React.FC<MessageDialogProps> = ({ children }) => {
         </Dialog>
     );
 };
+
+MessageDialog.displayName = 'MessageDialog';
 
 export default MessageDialog;

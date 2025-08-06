@@ -21,6 +21,6 @@ const links = [
         icon: SquareUser,
         url: '/mine'
     }
-];
+] as const;
 
 export { links };

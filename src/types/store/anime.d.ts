@@ -7,25 +7,25 @@ import type {
 
 interface AnimeAction {
     initialLoading: boolean;
-    animeDetail: AnimeDetailRes | null;
-    animeDanmaku: DanmakuItem[];
+    detail: AnimeDetailRes | null;
+    danmakus: DanmakuItem[];
     animeLoading: boolean;
-    animeRecommend: AnimeRecommend[];
-    animeSeries: AnimeSeriesItem[];
+    recommendations: AnimeRecommend[];
+    series: AnimeSeriesItem[];
     collectLoading: boolean;
     ratingLoading: boolean;
 }
 
 interface AnimeState {
-    fetchAnimeDetailData: (id: string) => Promise<void>;
+    fetchDetailData: (id: string) => Promise<void>;
     fetchAnimeData: (id: string) => Promise<void>;
-    fetchCollect: (id: string, isCollected: boolean) => Promise<void>;
+    fetchCollect: (id: string) => Promise<void>;
     fetchRating: (
         id: string,
         data: { score: string; content: string },
         cb: () => void
     ) => Promise<void>;
-    fetchPlay: (id: string) => Promise<void>;
+    incrementPlayCount: (id: string) => Promise<void>;
     saveHistory: ({
         id,
         animeId,

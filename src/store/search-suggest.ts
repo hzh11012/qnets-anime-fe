@@ -10,8 +10,9 @@ const useSearchSuggestStore = create<SearchSuggestState & SearchSuggestAction>(
         fetchData: async (keyword: string) => {
             set({ loading: true });
             try {
-                const suggests = await getAnimeSuggest({ keyword });
-                set({ list: suggests.data.rows });
+                const response = await getAnimeSuggest({ keyword });
+                const { rows = [] } = response.data;
+                set({ list: rows });
             } catch (error) {
                 set({ loading: false });
             }

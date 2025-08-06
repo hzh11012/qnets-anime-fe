@@ -18,7 +18,12 @@ const AnimeSeries: React.FC<AnimeSeriesProps> = ({
 }) => {
     if (!list?.length) return null;
 
-    const handleAnimeClick = (id: string) => onAnimeClick(id);
+    const handleAnimeClick = useCallback(
+        (id: string) => {
+            id && onAnimeClick(id);
+        },
+        [onAnimeClick]
+    );
 
     const getRemark = useCallback((item: AnimeSeriesItem) => {
         const { videoCount, status } = item;
@@ -68,5 +73,7 @@ const AnimeSeries: React.FC<AnimeSeriesProps> = ({
         </div>
     );
 };
+
+AnimeSeries.displayName = 'AnimeSeries';
 
 export default AnimeSeries;

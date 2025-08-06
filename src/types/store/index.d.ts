@@ -7,3 +7,5 @@ export * from '@/types/store/guide';
 export * from '@/types/store/search-history';
 export * from '@/types/store/search-suggest';
 export * from '@/types/store/bangumi';
+export * from '@/types/store/topic';
+export * from '@/types/store/topic-detail';

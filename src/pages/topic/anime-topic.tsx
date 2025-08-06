@@ -1,78 +1,92 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { AnimeCard } from '@/components/custom/anime-card';
 import { cn } from '@/lib/utils';
-import type { AnimeBangumiItem } from '@/types';
+import type { TopicOption } from '@/types';
 import { useInView } from 'react-intersection-observer';
 import Exception from '@/components/custom/exception';
 import AnimeSkeleton from '@/components/custom/anime-skeleton';
 
-interface AnimeBangumiListProps {
-    ref: (node?: Element | null) => void;
-    list: AnimeBangumiItem[];
-    loading: boolean;
-    hasMore: boolean;
-    getSubTitle: (item: AnimeBangumiItem) => string;
-    onAnimeClick: (id: string) => void;
+interface AnimeTopicHeaderProps {
+    title: string;
 }
 
-const AnimeBangumiList: React.FC<AnimeBangumiListProps> = ({
+const AnimeTopicHeader: React.FC<AnimeTopicHeaderProps> = memo(({ title }) => {
+    return (
+        <div className={cn('flex items-center mb-4')}>
+            <div className={cn('font-bold text-base leading-9')}>{title}</div>
+        </div>
+    );
+});
+
+AnimeTopicHeader.displayName = 'AnimeTopicHeader';
+
+interface AnimeTopicListProps {
+    ref: (node?: Element | null) => void;
+    list: TopicOption[];
+    loading: boolean;
+    hasMore: boolean;
+    onTopicClick: (id: string) => void;
+}
+
+const AnimeTopicList: React.FC<AnimeTopicListProps> = ({
     ref,
     list,
     loading,
     hasMore,
-    getSubTitle,
-    onAnimeClick
+    onTopicClick
 }) => {
     return (
         <div
             className={cn(
-                'grid gap-4 grid-cols-7 text-sm',
+                'grid gap-4 grid-cols-5 text-sm',
                 'md:gap-6',
-                'max-[1500px]:grid-cols-6',
-                'max-[1300px]:grid-cols-5',
-                'max-[1100px]:grid-cols-4',
-                'max-[855px]:grid-cols-3',
-                'max-md:grid-cols-3'
+                'max-[1500px]:grid-cols-4',
+                'max-[1140px]:grid-cols-3',
+                'max-[855px]:grid-cols-2',
+                'max-md:grid-cols-2'
             )}
         >
             {list.map(item => {
-                const { id, name, coverUrl, videoId = '' } = item;
-                const remark = getSubTitle(item);
+                const { id, name, coverUrl, count } = item;
+                const tip = `${count}个动漫`;
 
                 return (
                     <AnimeCard
                         key={id}
-                        type="vertical"
+                        type="horizontal"
                         title={name}
-                        remark={remark}
+                        tip={tip}
                         image={coverUrl}
-                        onClick={() => onAnimeClick(videoId)}
+                        onClick={() => onTopicClick(id)}
                     />
                 );
             })}
-            {loading && <AnimeSkeleton />}
+            {loading && <AnimeSkeleton type="horizontal" />}
             {/* 触底加载的锚点 */}
             {hasMore && <div ref={ref} style={{ height: 0 }} />}
         </div>
     );
 };
 
-interface AnimeBangumiProps {
-    list: AnimeBangumiItem[];
+AnimeTopicList.displayName = 'AnimeTopicList';
+
+interface AnimeTopicProps extends AnimeTopicHeaderProps {
+    list: TopicOption[];
     loading: boolean;
     hasMore: boolean;
     onLoadMore: () => void;
-    onAnimeClick: (id: string) => void;
+    onTopicClick: (id: string) => void;
     className?: string;
 }
 
-const AnimeBangumi: React.FC<AnimeBangumiProps> = ({
+const AnimeTopic: React.FC<AnimeTopicProps> = ({
+    title,
     list,
     hasMore,
     className,
     loading,
     onLoadMore,
-    onAnimeClick
+    onTopicClick
 }) => {
     const { ref } = useInView({
         threshold: 0,
@@ -83,26 +97,12 @@ const AnimeBangumi: React.FC<AnimeBangumiProps> = ({
         }
     });
 
-    const handleAnimeClick = useCallback(
+    const handleTopicClick = useCallback(
         (id: string) => {
-            id && onAnimeClick(id);
+            onTopicClick(id);
         },
-        [onAnimeClick]
+        [onTopicClick]
     );
-
-    const getSubTitle = useCallback((item: AnimeBangumiItem) => {
-        const { videoCount, status } = item;
-
-        if (!videoCount) return '即将开播';
-
-        if (status === 1) {
-            return `更新至第${videoCount}话`;
-        } else if (status === 2) {
-            return `全${videoCount}话`;
-        }
-
-        return '即将开播';
-    }, []);
 
     const isEmpty = useMemo(
         () => !list.length && !loading,
@@ -116,22 +116,22 @@ const AnimeBangumi: React.FC<AnimeBangumiProps> = ({
                 className
             )}
         >
+            <AnimeTopicHeader title={title} />
             {isEmpty ? (
                 <Exception type="empty" />
             ) : (
-                <AnimeBangumiList
+                <AnimeTopicList
                     ref={ref}
                     list={list}
                     loading={loading}
                     hasMore={hasMore}
-                    getSubTitle={getSubTitle}
-                    onAnimeClick={handleAnimeClick}
+                    onTopicClick={handleTopicClick}
                 />
             )}
         </div>
     );
 };
 
-AnimeBangumi.displayName = 'AnimeBangumi';
+AnimeTopic.displayName = 'AnimeTopic';
 
-export default AnimeBangumi;
+export default AnimeTopic;

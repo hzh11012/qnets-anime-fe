@@ -7,12 +7,14 @@ interface GuideState {
     page: number;
     pageSize: number;
     total: number;
+    hasMore: boolean;
 }
 
 interface GuideAction {
-    setUpdateDay: (updateDay: string) => void;
     fetchData: () => Promise<void>;
     loadMore: () => Promise<void>;
+    toggleDay: (updateDay: string) => Promise<void>;
+    reset: () => void;
 }
 
 export { GuideState, GuideAction };

@@ -1,27 +1,61 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useGuideStore } from '@/store';
 import AnimeGuide from '@/pages/guide/anime-guide';
 
-const Rank: React.FC = () => {
+const useGuide = () => {
     const navigate = useNavigate();
 
     const loading = useGuideStore(state => state.loading);
-    const guides = useGuideStore(state => state.list);
-    const total = useGuideStore(state => state.total);
+    const list = useGuideStore(state => state.list);
+    const hasMore = useGuideStore(state => state.hasMore);
     const updateDay = useGuideStore(state => state.updateDay);
     const fetchData = useGuideStore(state => state.fetchData);
     const loadMore = useGuideStore(state => state.loadMore);
-    const setUpdateDay = useGuideStore(state => state.setUpdateDay);
+    const reset = useGuideStore(state => state.reset);
+    const toggleDay = useGuideStore(state => state.toggleDay);
 
     useEffect(() => {
         fetchData();
-    }, []);
 
-    const handleAnimeClick = (id: string) => {
-        id && navigate(`/anime/${id}`);
+        return () => {
+            reset();
+        };
+    }, [fetchData, reset]);
+
+    const handleLoadMore = useCallback(() => {
+        loadMore();
+    }, [loadMore]);
+
+    const handleAnimeClick = useCallback(
+        (id: string) => {
+            id && navigate(`/anime/${id}`);
+        },
+        [navigate]
+    );
+
+    return {
+        loading,
+        list,
+        hasMore,
+        updateDay,
+        handleLoadMore,
+        handleAnimeClick,
+        toggleDay
     };
+};
+
+const Guide: React.FC = () => {
+    const {
+        loading,
+        list,
+        hasMore,
+        updateDay,
+        handleLoadMore,
+        handleAnimeClick,
+        toggleDay
+    } = useGuide();
 
     return (
         <div
@@ -32,16 +66,18 @@ const Rank: React.FC = () => {
         >
             <AnimeGuide
                 title="新番导视"
-                defaultUpdateDay={updateDay}
+                defaultDay={updateDay}
                 loading={loading}
-                list={guides}
-                total={total}
-                onUpdateDayChage={setUpdateDay}
-                onLoadMore={loadMore}
+                list={list}
+                hasMore={hasMore}
+                onDayChage={toggleDay}
+                onLoadMore={handleLoadMore}
                 onAnimeClick={handleAnimeClick}
             />
         </div>
     );
 };
 
-export default Rank;
+Guide.displayName = 'Guide';
+
+export default Guide;

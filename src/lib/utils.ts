@@ -6,6 +6,35 @@ const cn = (...inputs: ClassValue[]) => {
     return twMerge(clsx(inputs));
 };
 
+const checkPermission = (
+    permissions: string[],
+    requiredPermissions: string[]
+): boolean => {
+    return requiredPermissions.some(permission =>
+        permissions.includes(permission)
+    );
+};
+
+// 路由验证函数
+const shouldRevalidateRoute = ({
+    currentUrl,
+    nextUrl
+}: {
+    currentUrl: URL;
+    nextUrl: URL;
+}) => {
+    return currentUrl.pathname !== nextUrl.pathname;
+};
+
+// 懒加载组件工厂函数
+const createLazyComponent = (
+    importFn: () => Promise<{ default: React.ComponentType }>
+) => {
+    return async () => ({
+        Component: (await importFn()).default
+    });
+};
+
 const formatDate = (date: string, format: string = 'DD tt') => {
     return DateTime.fromISO(date).toFormat(format);
 };
@@ -109,6 +138,9 @@ const generateYearOptions = () => {
 
 export {
     cn,
+    checkPermission,
+    shouldRevalidateRoute,
+    createLazyComponent,
     formatDate,
     formateNumber,
     getResponsiveClasses,

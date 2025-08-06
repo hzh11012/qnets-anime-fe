@@ -1,142 +1,186 @@
-import React, { useEffect } from 'react';
-import {
-    createBrowserRouter,
-    Outlet,
-    RouteObject,
-    useLocation,
-    useNavigationType
-} from 'react-router-dom';
-import Fallback from '@/components/custom/fallback';
-import { getUserInfo } from '@/apis';
-import { useUserStore, useAnimeStore } from '@/store';
+import React, { memo } from 'react';
+import { createBrowserRouter, Outlet, RouteObject } from 'react-router-dom';
+import { useScrollReset, useUserStatusCheck } from '@/hooks';
 import Layout from '@/layout';
+import { getUserInfo } from '@/apis';
+import { useUserStore, useAnimeStore, useTopicDetailStore } from '@/store';
+import {
+    checkPermission,
+    shouldRevalidateRoute,
+    createLazyComponent
+} from '@/lib/utils';
+import Fallback from '@/components/custom/fallback';
 import Exception from '@/components/custom/exception';
 
+// 环境变量
 const ADMIN = import.meta.env.VITE_ADMIN;
 const CLIENT_PREFIX = import.meta.env.VITE_CLIENT_PREFIX;
 
 // 认证 loader
 const authLoader = async () => {
-    const { data } = await getUserInfo();
-    const permissions = data.permissions;
-    // 是否允许查询里番
-    const isAllowViewHentai = [ADMIN, `${CLIENT_PREFIX}:animetype_4:view`].some(
-        p => permissions.includes(p)
-    );
-    // 是否允许发弹幕
-    const isAllowSendDanmaku = [ADMIN, `${CLIENT_PREFIX}:danmakus:create`].some(
-        p => permissions.includes(p)
-    );
+    try {
+        const { data } = await getUserInfo();
+        const permissions = data.permissions;
 
-    // 是否允许发评论
-    const isAllowSendComment = [
-        ADMIN,
-        `${CLIENT_PREFIX}:video-comments:create`
-    ].some(p => permissions.includes(p));
+        // 权限检查
+        const isAllowViewHentai = checkPermission(permissions, [
+            ADMIN,
+            `${CLIENT_PREFIX}:animetype_4:view`
+        ]);
 
-    useUserStore.setState({
-        userInfo: data,
-        isAllowViewHentai,
-        isAllowSendDanmaku,
-        isAllowSendComment
-    });
-    return null;
-};
+        const isAllowSendDanmaku = checkPermission(permissions, [
+            ADMIN,
+            `${CLIENT_PREFIX}:danmakus:create`
+        ]);
 
-const WithLayout = ({ children }: { children: React.ReactNode }) => {
-    const location = useLocation();
-    const navigationType = useNavigationType();
-    useEffect(() => {
-        // 仅在新导航时重置滚动（排除回退/前进）
-        if (navigationType === 'PUSH') {
-            window.scrollTo(0, 0);
-        }
-    }, [location.pathname, navigationType]);
+        const isAllowSendComment = checkPermission(permissions, [
+            ADMIN,
+            `${CLIENT_PREFIX}:video-comments:create`
+        ]);
 
-    const userInfo = useUserStore(state => state.userInfo);
-    if (userInfo?.status === 0) {
-        return <Exception type="ban" />;
+        useUserStore.setState({
+            userInfo: data,
+            isAllowViewHentai,
+            isAllowSendDanmaku,
+            isAllowSendComment
+        });
+
+        return null;
+    } catch (error) {
+        throw error;
     }
-    return <>{children}</>;
 };
+
+// 基础布局组件
+const BaseLayout = memo(({ children }: { children: React.ReactNode }) => {
+    useScrollReset();
+    const banCheck = useUserStatusCheck();
+
+    if (banCheck) return banCheck;
+
+    return <>{children}</>;
+});
+
+BaseLayout.displayName = 'BaseLayout';
 
 // 视频 loader
 const videoLoader = async ({ params }: { params: { id: string } }) => {
-    const id = params.id;
-    const state = useAnimeStore.getState();
-    const fetchAnimeDetailData = state.fetchAnimeDetailData;
-    await fetchAnimeDetailData(id);
-    return null;
+    try {
+        const id = params.id;
+        const state = useAnimeStore.getState();
+        const fetchDetailData = state.fetchDetailData;
+        await fetchDetailData(id);
+        return null;
+    } catch (error) {
+        throw error;
+    }
 };
 
-const WithVideoLayout = ({ children }: { children: React.ReactNode }) => {
-    const location = useLocation();
-    const navigationType = useNavigationType();
-    useEffect(() => {
-        // 仅在新导航时重置滚动（排除回退/前进）
-        if (navigationType === 'PUSH') {
-            window.scrollTo(0, 0);
-        }
-    }, [location.pathname, navigationType]);
+// 视频布局组件
+const VideoLayout = memo(({ children }: { children: React.ReactNode }) => {
+    useScrollReset();
+    const banCheck = useUserStatusCheck();
 
-    const userInfo = useUserStore(state => state.userInfo);
-    if (userInfo?.status === 0) {
-        return <Exception type="ban" />;
-    }
+    if (banCheck) return banCheck;
 
-    const animeDetail = useAnimeStore(state => state.animeDetail);
-    if (!animeDetail) {
-        return <Exception type="not-found" />;
-    }
+    const detail = useAnimeStore(state => state.detail);
+
+    if (!detail) return <Exception type="not-found" />;
+
     return <>{children}</>;
+});
+
+VideoLayout.displayName = 'VideoLayout';
+
+// 专题 loader
+const topicLoader = async ({ params }: { params: { id: string } }) => {
+    try {
+        const id = params.id;
+        const state = useTopicDetailStore.getState();
+        const fetchTopicDetailData = state.fetachTopicDetail;
+        await fetchTopicDetailData(id);
+        return null;
+    } catch (error) {
+        throw error;
+    }
 };
 
+// 专题布局组件
+const TopicLayout = memo(({ children }: { children: React.ReactNode }) => {
+    useScrollReset();
+    const banCheck = useUserStatusCheck();
+
+    if (banCheck) return banCheck;
+
+    const topicDetail = useTopicDetailStore(state => state.detail);
+
+    if (!topicDetail) return <Exception type="not-found" />;
+
+    return <>{children}</>;
+});
+
+TopicLayout.displayName = 'TopicLayout';
+
+// 路由配置
 const staticRoutes: RouteObject[] = [
     {
         path: '/',
         loader: authLoader,
-        shouldRevalidate: ({ currentUrl, nextUrl }) => {
-            // 仅当路径变化时重新验证
-            return currentUrl.pathname !== nextUrl.pathname;
-        },
+        shouldRevalidate: shouldRevalidateRoute,
         Component: () => (
-            <WithLayout>
+            <BaseLayout>
                 <Layout />
-            </WithLayout>
+            </BaseLayout>
         ),
         hydrateFallbackElement: <Fallback />,
         errorElement: <Exception type="error" />,
         children: [
             {
                 index: true,
-                lazy: async () => ({
-                    Component: (await import('@/pages/home/index')).default
-                })
+                lazy: createLazyComponent(() => import('@/pages/home/index'))
             },
             {
                 path: 'bangumi',
-                index: true,
-                lazy: async () => ({
-                    Component: (await import('@/pages/bangumi/index')).default
-                })
+                lazy: createLazyComponent(() => import('@/pages/bangumi/index'))
             },
             {
                 path: 'guide',
-                index: true,
-                lazy: async () => ({
-                    Component: (await import('@/pages/guide/index')).default
-                })
+                lazy: createLazyComponent(() => import('@/pages/guide/index'))
             },
             {
                 path: 'rank',
-                index: true,
-                lazy: async () => ({
-                    Component: (await import('@/pages/rank/index')).default
-                })
+                lazy: createLazyComponent(() => import('@/pages/rank/index'))
+            },
+            {
+                path: 'topic',
+                lazy: createLazyComponent(() => import('@/pages/topic/index'))
             },
             {
                 path: '*',
                 element: <Exception type="not-found" />
+            }
+        ]
+    },
+
+    {
+        path: '/topic/:id',
+        loader: async (ctx: any) => {
+            await topicLoader(ctx);
+        },
+        shouldRevalidate: shouldRevalidateRoute,
+        Component: () => (
+            <TopicLayout>
+                <Layout />
+            </TopicLayout>
+        ),
+        hydrateFallbackElement: <Fallback />,
+        errorElement: <Exception type="error" />,
+        children: [
+            {
+                index: true,
+                lazy: createLazyComponent(
+                    () => import('@/pages/topic-detail/index')
+                )
             }
         ]
     },
@@ -146,28 +190,23 @@ const staticRoutes: RouteObject[] = [
             await authLoader();
             await videoLoader(ctx);
         },
-        shouldRevalidate: ({ currentUrl, nextUrl }) => {
-            // 仅当路径变化时重新验证
-            return currentUrl.pathname !== nextUrl.pathname;
-        },
-        element: (
-            <WithVideoLayout>
+        shouldRevalidate: shouldRevalidateRoute,
+        Component: () => (
+            <VideoLayout>
                 <Outlet />
-            </WithVideoLayout>
+            </VideoLayout>
         ),
         hydrateFallbackElement: <Fallback />,
         errorElement: <Exception type="error" />,
         children: [
             {
                 index: true,
-                lazy: async () => ({
-                    Component: (await import('@/pages/anime/index')).default
-                })
+                lazy: createLazyComponent(() => import('@/pages/anime/index'))
             }
         ]
     }
 ];
 
-const router = createBrowserRouter(staticRoutes as RouteObject[]);
+const router = createBrowserRouter(staticRoutes);
 
 export default router;

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { danmakuCreate } from '@/apis';
 import Player from '@/components/custom/player';
 import {
@@ -17,7 +17,6 @@ import { Separator } from '@radix-ui/react-separator';
 import AnimeEpisode from '@/pages/anime/anime-episode';
 import AnimeRecommend from '@/pages/anime/anime-recommend';
 import AnimeSeries from '@/pages/anime/anime-series';
-import { VideoCardSkeleton } from '@/components/custom/video-card';
 import {
     ChevronLeft,
     ChevronRight,
@@ -32,26 +31,12 @@ import {
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import type { FormValues } from '@/pages/anime/anime-rating';
+import VideoSkeleton from '@/components/custom/video-skeleton';
 
 const SIDEBAR_WIDTH = '23.75rem';
 
-const AnimeSkeleton: React.FC = () => {
-    const skeletonItems = useMemo(
-        () =>
-            Array.from({ length: 10 }, (_, index) => (
-                <VideoCardSkeleton key={index} className={cn('px-5')} />
-            )),
-        []
-    );
-
-    return (
-        <div className={cn('flex flex-col flex-wrap gap-4')}>
-            {skeletonItems}
-        </div>
-    );
-};
-
-const AnimeDropdownMenu: React.FC<{ navigate: any }> = ({ navigate }) => {
+const AnimeDropdownMenu: React.FC = memo(() => {
+    const navigate = useNavigate();
     const handleGoHome = useCallback(() => navigate('/'), [navigate]);
     const handleReload = useCallback(() => navigate(0), [navigate]);
 
@@ -85,19 +70,18 @@ const AnimeDropdownMenu: React.FC<{ navigate: any }> = ({ navigate }) => {
             </DropdownMenuContent>
         </DropdownMenu>
     );
-};
+});
+
+AnimeDropdownMenu.displayName = 'AnimeDropdownMenu';
 
 // 自定义Hook：处理收藏和评分
 const useInteractionHandlers = (detail: any) => {
     const fetchCollect = useAnimeStore(state => state.fetchCollect);
     const fetchRating = useAnimeStore(state => state.fetchRating);
 
-    const handleCollected = useCallback(
-        async (isCollected: boolean) => {
-            await fetchCollect(detail.video.animeId, isCollected);
-        },
-        [detail.video.animeId, fetchCollect]
-    );
+    const handleCollected = useCallback(async () => {
+        await fetchCollect(detail.video.animeId);
+    }, [detail.video.animeId, fetchCollect]);
 
     const handleRating = useCallback(
         async (values: FormValues, cb: () => void) => {
@@ -114,7 +98,7 @@ const useInteractionHandlers = (detail: any) => {
 
 // 自定义Hook：处理播放相关逻辑
 const usePlayHandlers = (detail: any, navigate: any) => {
-    const fetchPlay = useAnimeStore(state => state.fetchPlay);
+    const incrementPlayCount = useAnimeStore(state => state.incrementPlayCount);
     const saveHistory = useAnimeStore(state => state.saveHistory);
 
     const handleSelectVideo = useCallback(
@@ -126,9 +110,9 @@ const usePlayHandlers = (detail: any, navigate: any) => {
 
     const handleIncrementPlay = useCallback(async () => {
         if (detail.video.id) {
-            await fetchPlay(detail.video.id);
+            await incrementPlayCount(detail.video.id);
         }
-    }, [detail.video.id, fetchPlay]);
+    }, [detail.video.id, incrementPlayCount]);
 
     const handleHistoryEmit = useCallback(
         async (time: number) => {
@@ -207,17 +191,20 @@ const useHistorySeek = (detail: any) => {
     return isSeekHistory;
 };
 
-const Anime: React.FC = () => {
+const useAnime = () => {
     const navigate = useNavigate();
 
-    const detail = useAnimeStore(state => state.animeDetail)!;
-    const danmaku = useAnimeStore(state => state.animeDanmaku);
-    const fetchAnimeData = useAnimeStore(state => state.fetchAnimeData);
+    const detail = useAnimeStore(state => state.detail)!;
+    const danmakus = useAnimeStore(state => state.danmakus);
+
     const animeLoading = useAnimeStore(state => state.animeLoading);
-    const recommendList = useAnimeStore(state => state.animeRecommend);
-    const seriesList = useAnimeStore(state => state.animeSeries);
+    const recommendations = useAnimeStore(state => state.recommendations);
+    const series = useAnimeStore(state => state.series);
+
     const collectLoading = useAnimeStore(state => state.collectLoading);
     const ratingLoading = useAnimeStore(state => state.ratingLoading);
+
+    const fetchAnimeData = useAnimeStore(state => state.fetchAnimeData);
 
     const isSeekHistory = useHistorySeek(detail);
     const handleDanmuEmit = useDanmakuEmit(detail.video.id);
@@ -230,6 +217,42 @@ const Anime: React.FC = () => {
         fetchAnimeData(animeId);
     }, [detail.video.animeId, fetchAnimeData]);
 
+    return {
+        detail,
+        danmakus,
+        animeLoading,
+        recommendations,
+        series,
+        collectLoading,
+        ratingLoading,
+        isSeekHistory,
+        handleDanmuEmit,
+        handleSelectVideo,
+        handleIncrementPlay,
+        handleHistoryEmit,
+        handleCollected,
+        handleRating
+    };
+};
+
+const Anime: React.FC = () => {
+    const {
+        detail,
+        danmakus,
+        animeLoading,
+        recommendations,
+        series,
+        collectLoading,
+        ratingLoading,
+        isSeekHistory,
+        handleDanmuEmit,
+        handleSelectVideo,
+        handleIncrementPlay,
+        handleHistoryEmit,
+        handleCollected,
+        handleRating
+    } = useAnime();
+
     return (
         <SidebarProvider
             style={{ '--sidebar-width': SIDEBAR_WIDTH } as React.CSSProperties}
@@ -238,10 +261,9 @@ const Anime: React.FC = () => {
             <SidebarInset className={cn('bg-black flex-none md:flex-1')}>
                 <Player
                     emitter={true}
-                    animeId={detail.video.animeId}
                     url={detail.video.url}
                     time={detail.time}
-                    danmaku={danmaku}
+                    danmaku={danmakus}
                     isSeekHistory={isSeekHistory}
                     onDanmuEmit={handleDanmuEmit}
                     onIncrementPlay={handleIncrementPlay}
@@ -319,22 +341,26 @@ const Anime: React.FC = () => {
                             />
                         </div>
                         {animeLoading ? (
-                            <AnimeSkeleton />
+                            <div
+                                className={cn('flex flex-col flex-wrap gap-4')}
+                            >
+                                <VideoSkeleton />
+                            </div>
                         ) : (
                             <>
                                 <AnimeSeries
                                     title={`${detail.name}系列`}
-                                    list={seriesList}
+                                    list={series}
                                     onAnimeClick={handleSelectVideo}
                                     className={cn('-my-2')}
                                 />
-                                {!!seriesList.length && (
+                                {!!series.length && (
                                     <Separator
                                         className={cn('my-5 h-[1px] bg-border')}
                                     />
                                 )}
                                 <AnimeRecommend
-                                    list={recommendList}
+                                    list={recommendations}
                                     onAnimeClick={handleSelectVideo}
                                     className={cn('-my-2')}
                                 />
@@ -347,10 +373,12 @@ const Anime: React.FC = () => {
                     </TabsContent>
                 </Tabs>
 
-                <AnimeDropdownMenu navigate={navigate} />
+                <AnimeDropdownMenu />
             </Sidebar>
         </SidebarProvider>
     );
 };
+
+Anime.displayName = 'Anime';
 
 export default Anime;

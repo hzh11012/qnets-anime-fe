@@ -1,14 +1,14 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import AnimeBanner from '@/pages/home/anime-banner';
 import { useHomeStore, useUserStore } from '@/store';
 import { cn, getResponsiveClasses } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import AnimeType from '@/pages/home/anime-type';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AnimeCardSkeleton } from '@/components/custom/anime-card';
 import AnimeTopic from '@/pages/home/anime-topic';
 import AnimeCollection from '@/pages/home/anime-collection';
 import AnimeGuess from '@/pages/home/anime-guess';
+import AnimeSkeleton from '@/components/custom/anime-skeleton';
 
 const ANIME_TYPES_MAP: Record<number, string> = {
     0: '剧场版推荐',
@@ -21,7 +21,7 @@ const ANIME_TYPES_MAP: Record<number, string> = {
 const ALL_ANIME_TYPES = Object.keys(ANIME_TYPES_MAP);
 const NORMAL_ANIME_TYPES = ALL_ANIME_TYPES.slice(0, 4);
 
-const HomeSkeleton: React.FC = () => {
+const HomeSkeleton: React.FC = memo(() => {
     const baseContainerClasses = cn(
         'mt-4 md:mt-8',
         'transition-[margin] duration-200'
@@ -34,15 +34,6 @@ const HomeSkeleton: React.FC = () => {
         '[&>*:nth-last-child(1)]:max-md:hidden'
     );
 
-    const renderAnimeCards = (count: number, type: 'vertical' | 'horizontal') =>
-        [...Array(count)].map((_, index) => (
-            <AnimeCardSkeleton
-                type={type}
-                key={index}
-                className={getResponsiveClasses(index, type)}
-            />
-        ));
-
     return (
         <>
             <Skeleton
@@ -52,32 +43,42 @@ const HomeSkeleton: React.FC = () => {
                 )}
             />
             <div className={cn(gridContainerClasses, 'grid grid-cols-2')}>
-                {renderAnimeCards(5, 'horizontal')}
+                <AnimeSkeleton
+                    count={5}
+                    type="horizontal"
+                    className={getResponsiveClasses}
+                />
             </div>
-            {[...Array(3)].map((_, index) => (
+            {Array.from({ length: 3 }, (_, index) => (
                 <div
                     key={index}
                     className={cn(gridContainerClasses, 'grid grid-cols-3')}
                 >
-                    {renderAnimeCards(7, 'vertical')}
+                    <AnimeSkeleton
+                        count={7}
+                        type="vertical"
+                        className={getResponsiveClasses}
+                    />
                 </div>
             ))}
         </>
     );
-};
+});
 
-const Home: React.FC = () => {
+HomeSkeleton.displayName = 'HomeSkeleton';
+
+const useHome = () => {
     const navigate = useNavigate();
 
     const initialLoading = useHomeStore(state => state.initialLoading);
-    const fetchHomeData = useHomeStore(state => state.fetchHomeData);
     const banners = useHomeStore(state => state.banners);
     const collections = useHomeStore(state => state.collections);
     const topics = useHomeStore(state => state.topics);
     const animeTypes = useHomeStore(state => state.animeTypes);
-
-    const recommended = useHomeStore(state => state.recommended);
+    const likes = useHomeStore(state => state.likes);
+    const fetchData = useHomeStore(state => state.fetchData);
     const loadMore = useHomeStore(state => state.loadMore);
+    const reset = useHomeStore(state => state.reset);
 
     const isAllowViewHentai = useUserStore(state => state.isAllowViewHentai);
     const ANIME_TYPES = useMemo(
@@ -86,28 +87,79 @@ const Home: React.FC = () => {
     );
 
     useEffect(() => {
-        fetchHomeData(ANIME_TYPES);
-    }, [ANIME_TYPES]);
+        fetchData(ANIME_TYPES);
 
-    const handleAnimeClick = (id: string) => {
-        id && navigate(`anime/${id}`);
-    };
+        return () => {
+            reset();
+        };
+    }, [ANIME_TYPES, fetchData, reset]);
 
-    const handleTopicClick = (id: string) => {
-        navigate(`topic/${id}`);
-    };
+    const handleAnimeClick = useCallback(
+        (id: string) => {
+            id && navigate(`/anime/${id}`);
+        },
+        [navigate]
+    );
 
-    const handleAllClick = (type: number) => {
-        navigate(`bangumi?type=${type}`);
-    };
+    const handleTopicClick = useCallback(
+        (id: string) => {
+            id && navigate(`/topic/${id}`);
+        },
+        [navigate]
+    );
 
-    const handleTopicAllClick = () => {
+    const handleAllAnimeClick = useCallback(
+        (type: number) => {
+            navigate(`bangumi?type=${type}`);
+        },
+        [navigate]
+    );
+
+    const handleAllTopicClick = useCallback(() => {
         navigate('topic');
-    };
+    }, [navigate]);
 
-    const handleCollectionAllClick = () => {
+    const handleAllCollectionClick = useCallback(() => {
         navigate('mine');
+    }, [navigate]);
+
+    const handleLoadMore = useCallback(() => {
+        loadMore();
+    }, [loadMore]);
+
+    return {
+        initialLoading,
+        banners,
+        collections,
+        topics,
+        animeTypes,
+        ANIME_TYPES,
+        likes,
+        handleAnimeClick,
+        handleAllAnimeClick,
+        handleTopicClick,
+        handleAllTopicClick,
+        handleAllCollectionClick,
+        handleLoadMore
     };
+};
+
+const Home: React.FC = () => {
+    const {
+        initialLoading,
+        banners,
+        collections,
+        topics,
+        animeTypes,
+        ANIME_TYPES,
+        likes,
+        handleAnimeClick,
+        handleAllAnimeClick,
+        handleTopicClick,
+        handleAllTopicClick,
+        handleAllCollectionClick,
+        handleLoadMore
+    } = useHome();
 
     const renderAnimeTypes = useMemo(
         () =>
@@ -117,10 +169,10 @@ const Home: React.FC = () => {
                     title={ANIME_TYPES_MAP[index]}
                     list={animeTypes[index]}
                     onAnimeClick={handleAnimeClick}
-                    onAllClick={() => handleAllClick(index)}
+                    onAllClick={() => handleAllAnimeClick(index)}
                 />
             )),
-        [ANIME_TYPES, animeTypes]
+        [ANIME_TYPES, animeTypes, handleAnimeClick, handleAllAnimeClick]
     );
 
     if (initialLoading) return <HomeSkeleton />;
@@ -138,7 +190,7 @@ const Home: React.FC = () => {
                 title="我的追番"
                 list={collections}
                 onAnimeClick={handleAnimeClick}
-                onAllClick={() => handleCollectionAllClick()}
+                onAllClick={() => handleAllCollectionClick()}
             />
 
             {renderAnimeTypes}
@@ -147,19 +199,21 @@ const Home: React.FC = () => {
                 title="专题推荐"
                 list={topics}
                 onTopicClick={handleTopicClick}
-                onAllClick={() => handleTopicAllClick()}
+                onAllClick={() => handleAllTopicClick()}
             />
 
             <AnimeGuess
                 title="猜你喜欢"
-                loading={recommended.loading}
-                list={recommended.list}
-                total={recommended.total}
-                onLoadMore={loadMore}
+                loading={likes.loading}
+                list={likes.list}
+                hasMore={likes.hasMore}
+                onLoadMore={handleLoadMore}
                 onAnimeClick={handleAnimeClick}
             />
         </div>
     );
 };
+
+Home.displayName = 'Home';
 
 export default Home;

@@ -1,39 +1,99 @@
-import React, { useCallback, useMemo } from 'react';
-import { AnimeCard, AnimeCardSkeleton } from '@/components/custom/anime-card';
+import React, { memo, useCallback, useMemo } from 'react';
+import { AnimeCard } from '@/components/custom/anime-card';
 import { cn } from '@/lib/utils';
 import type { AnimeYouLike } from '@/types';
 import { useInView } from 'react-intersection-observer';
+import AnimeSkeleton from '@/components/custom/anime-skeleton';
 
-interface AnimeGuessProps {
+interface AnimeGuessHeaderProps {
     title: string;
+}
+
+const AnimeGuessHeader: React.FC<AnimeGuessHeaderProps> = memo(({ title }) => {
+    return (
+        <div className={cn('flex items-center mb-4')}>
+            <div className={cn('font-bold text-base leading-9')}>{title}</div>
+        </div>
+    );
+});
+
+AnimeGuessHeader.displayName = 'AnimeGuessHeader';
+
+interface AnimeGuessListProps {
+    ref: (node?: Element | null) => void;
     list: AnimeYouLike[];
-    total: number;
+    loading: boolean;
+    hasMore: boolean;
+    getSubTitle: (item: AnimeYouLike) => string;
+    onAnimeClick: (id: string) => void;
+}
+
+const AnimeGuessList: React.FC<AnimeGuessListProps> = ({
+    ref,
+    list,
+    loading,
+    hasMore,
+    getSubTitle,
+    onAnimeClick
+}) => {
+    return (
+        <div
+            className={cn(
+                'grid gap-4 grid-cols-5 text-sm',
+                'md:gap-6',
+                'max-[1500px]:grid-cols-4',
+                'max-[1140px]:grid-cols-3',
+                'max-[855px]:grid-cols-2',
+                'max-md:grid-cols-2'
+            )}
+        >
+            {list.map(item => {
+                const { id, name, remark, bannerUrl, videoId = '' } = item;
+                const tip = getSubTitle(item);
+
+                return (
+                    <AnimeCard
+                        key={id}
+                        type="horizontal"
+                        title={name}
+                        remark={remark}
+                        tip={tip}
+                        image={bannerUrl}
+                        onClick={() => onAnimeClick(videoId)}
+                    />
+                );
+            })}
+            {loading && <AnimeSkeleton type="horizontal" />}
+            {/* 触底加载的锚点 */}
+            {hasMore && <div ref={ref} style={{ height: 0 }} />}
+        </div>
+    );
+};
+
+AnimeGuessList.displayName = 'AnimeGuessList';
+
+interface AnimeGuessProps extends AnimeGuessHeaderProps {
+    list: AnimeYouLike[];
+    hasMore: boolean;
     loading: boolean;
     onLoadMore: () => void;
     onAnimeClick: (id: string) => void;
     className?: string;
 }
 
-const AnimeGuessSkeleton: React.FC<{ count?: number }> = ({ count = 10 }) => (
-    <>
-        {[...Array(count)].map((_, index) => (
-            <AnimeCardSkeleton type="horizontal" key={index} />
-        ))}
-    </>
-);
-
 const AnimeGuess: React.FC<AnimeGuessProps> = ({
     title,
     list,
-    total,
+    hasMore,
     className,
     loading,
     onLoadMore,
     onAnimeClick
 }) => {
-    const hasMore = useMemo(() => {
-        return list.length < total;
-    }, [list, total]);
+    const isEmpty = useMemo(
+        () => !list.length && !loading,
+        [list.length, loading]
+    );
 
     const { ref } = useInView({
         threshold: 0,
@@ -44,7 +104,12 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
         }
     });
 
-    const handleAnimeClick = (id: string) => onAnimeClick(id);
+    const handleAnimeClick = useCallback(
+        (id: string) => {
+            id && onAnimeClick(id);
+        },
+        [onAnimeClick]
+    );
 
     const getSubTitle = useCallback((item: AnimeYouLike) => {
         const { videoCount, status } = item;
@@ -60,7 +125,7 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
         return '即将开播';
     }, []);
 
-    if (!list.length && !loading) return null;
+    if (isEmpty) return null;
 
     return (
         <div
@@ -69,41 +134,19 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
                 className
             )}
         >
-            <div className={cn('flex items-center mb-4')}>
-                <div className={cn('font-bold text-base leading-9')}>{title}</div>
-            </div>
-            <div
-                className={cn(
-                    'grid gap-4 grid-cols-5 text-sm',
-                    'md:gap-6',
-                    'max-[1500px]:grid-cols-4',
-                    'max-[1140px]:grid-cols-3',
-                    'max-[855px]:grid-cols-2',
-                    'max-md:grid-cols-2'
-                )}
-            >
-                {list.map(item => {
-                    const { id, videoId = '', name, remark, bannerUrl } = item;
-                    const tip = getSubTitle(item);
-
-                    return (
-                        <AnimeCard
-                            key={id}
-                            type="horizontal"
-                            title={name}
-                            remark={remark}
-                            tip={tip}
-                            image={bannerUrl}
-                            onClick={() => handleAnimeClick(videoId)}
-                        />
-                    );
-                })}
-                {loading && <AnimeGuessSkeleton />}
-                {/* 触底加载的锚点 */}
-                <div ref={hasMore ? ref : undefined} style={{ height: 0 }} />
-            </div>
+            <AnimeGuessHeader title={title} />
+            <AnimeGuessList
+                ref={ref}
+                list={list}
+                loading={loading}
+                hasMore={hasMore}
+                getSubTitle={getSubTitle}
+                onAnimeClick={handleAnimeClick}
+            />
         </div>
     );
 };
+
+AnimeGuess.displayName = 'AnimeGuess';
 
 export default AnimeGuess;

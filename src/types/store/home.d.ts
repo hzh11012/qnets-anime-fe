@@ -12,18 +12,20 @@ interface HomeState {
     animeTypes: AnimeOption[][];
     topics: TopicOption[];
     collections: CollectionOption[];
-    recommended: {
+    likes: {
         list: AnimeYouLike[];
         page: number;
         pageSize: number;
         total: number;
         loading: boolean;
+        hasMore: boolean;
     };
 }
 
 interface HomeAction {
-    fetchHomeData: (types: string[]) => Promise<void>;
+    fetchData: (types: string[]) => Promise<void>;
     loadMore: () => Promise<void>;
+    reset: () => void;
 }
 
 export { HomeState, HomeAction };

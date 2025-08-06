@@ -39,4 +39,6 @@ const Layout: React.FC = () => {
     );
 };
 
+Layout.displayName = 'Layout';
+
 export default Layout;

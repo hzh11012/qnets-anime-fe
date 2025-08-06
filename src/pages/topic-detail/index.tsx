@@ -1,30 +1,31 @@
 import React, { useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { useRankStore } from '@/store';
+import { useTopicDetailStore } from '@/store';
 import AnimeRank from '@/pages/rank/anime-rank';
 
-const useRank = () => {
+const useTopicDetail = () => {
     const navigate = useNavigate();
 
-    const loading = useRankStore(state => state.loading);
-    const list = useRankStore(state => state.list);
-    const hasMore = useRankStore(state => state.hasMore);
-    const fetchData = useRankStore(state => state.fetchData);
-    const loadMore = useRankStore(state => state.loadMore);
-    const reset = useRankStore(state => state.reset);
+    const detail = useTopicDetailStore(state => state.detail!);
+    const loading = useTopicDetailStore(state => state.loading);
+    const list = useTopicDetailStore(state => state.list);
+    const hasMore = useTopicDetailStore(state => state.hasMore);
+    const fetchData = useTopicDetailStore(state => state.fetchData);
+    const loadMore = useTopicDetailStore(state => state.loadMore);
+    const reset = useTopicDetailStore(state => state.reset);
 
     useEffect(() => {
-        fetchData();
+        fetchData(detail.id);
 
         return () => {
             reset();
         };
-    }, [fetchData, reset]);
+    }, [detail.id, fetchData, reset]);
 
     const handleLoadMore = useCallback(() => {
-        loadMore();
-    }, [loadMore]);
+        loadMore(detail.id);
+    }, [detail.id, loadMore]);
 
     const handleAnimeClick = useCallback(
         (id: string) => {
@@ -34,6 +35,7 @@ const useRank = () => {
     );
 
     return {
+        detail,
         loading,
         list,
         hasMore,
@@ -42,9 +44,9 @@ const useRank = () => {
     };
 };
 
-const Rank: React.FC = () => {
-    const { loading, list, hasMore, handleLoadMore, handleAnimeClick } =
-        useRank();
+const TopicDetail: React.FC = () => {
+    const { detail, loading, list, hasMore, handleLoadMore, handleAnimeClick } =
+        useTopicDetail();
 
     return (
         <div
@@ -54,7 +56,8 @@ const Rank: React.FC = () => {
             )}
         >
             <AnimeRank
-                title="热门动漫排行"
+                title={detail.name}
+                description={detail.description}
                 loading={loading}
                 list={list}
                 hasMore={hasMore}
@@ -65,6 +68,6 @@ const Rank: React.FC = () => {
     );
 };
 
-Rank.displayName = 'Rank';
+TopicDetail.displayName = 'TopicDetail';
 
-export default Rank;
+export default TopicDetail;

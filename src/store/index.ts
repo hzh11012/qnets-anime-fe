@@ -7,3 +7,5 @@ export * from '@/store/guide';
 export * from '@/store/search-history';
 export * from '@/store/search-suggest';
 export * from '@/store/bangumi';
+export * from '@/store/topic';
+export * from '@/store/topic-detail';
