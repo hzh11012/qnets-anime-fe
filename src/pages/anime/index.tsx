@@ -201,7 +201,6 @@ const useAnime = () => {
     const recommendations = useAnimeStore(state => state.recommendations);
     const series = useAnimeStore(state => state.series);
 
-    const collectLoading = useAnimeStore(state => state.collectLoading);
     const ratingLoading = useAnimeStore(state => state.ratingLoading);
 
     const fetchAnimeData = useAnimeStore(state => state.fetchAnimeData);
@@ -223,7 +222,6 @@ const useAnime = () => {
         animeLoading,
         recommendations,
         series,
-        collectLoading,
         ratingLoading,
         isSeekHistory,
         handleDanmuEmit,
@@ -242,7 +240,6 @@ const Anime: React.FC = () => {
         animeLoading,
         recommendations,
         series,
-        collectLoading,
         ratingLoading,
         isSeekHistory,
         handleDanmuEmit,
@@ -324,7 +321,6 @@ const Anime: React.FC = () => {
                         <div className={cn('px-5')}>
                             <AnimeDescription
                                 detail={detail!}
-                                collectLoading={collectLoading}
                                 onCollected={handleCollected}
                                 ratingLoading={ratingLoading}
                                 onRating={handleRating}

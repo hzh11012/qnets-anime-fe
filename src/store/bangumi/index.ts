@@ -31,7 +31,7 @@ const useBangumiStore = create<BangumiState & BangumiAction>()(
 
                 const response = await getAnimeBangumi({
                     page: 1,
-                    pageSize: pageSize * 2,
+                    pageSize,
                     ...params
                 });
 

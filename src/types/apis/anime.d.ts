@@ -146,6 +146,35 @@ interface AnimeBangumiRes {
     rows: AnimeBangumiItem[];
 }
 
+interface AnimeSearchItem {
+    id: string;
+    name: string;
+    description: string;
+    coverUrl: string;
+    status: number;
+    type: number;
+    director: string;
+    cv: string;
+    year: number;
+    month: number;
+    tags: string[];
+    averageRating: number;
+    ratingCount: number;
+    videoCount: number;
+    videoId?: string;
+    videos: { id: string; episode: number }[];
+}
+
+interface AnimeSearchParams extends AnimeSuggestParams {
+    page?: number;
+    pageSize?: number;
+}
+
+interface AnimeSearchRes {
+    total: number;
+    rows: AnimeSearchItem[];
+}
+
 export {
     AnimeOptionsRes,
     AnimeOption,
@@ -166,5 +195,8 @@ export {
     AnimeSuggestParams,
     AnimeBangumiItem,
     AnimeBangumiRes,
-    AnimeBangumiParams
+    AnimeBangumiParams,
+    AnimeSearchParams,
+    AnimeSearchItem,
+    AnimeSearchRes
 };

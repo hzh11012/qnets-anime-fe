@@ -25,7 +25,7 @@ const useGuideStore = create<GuideState & GuideAction>()(
                 const response = await getAnimeGuideList({
                     updateDay,
                     page: 1,
-                    pageSize: pageSize * 2
+                    pageSize
                 });
 
                 const { rows = [], total = 0 } = response.data;
@@ -109,7 +109,7 @@ const useGuideStore = create<GuideState & GuideAction>()(
                 const response = await getAnimeGuideList({
                     updateDay,
                     page: 1,
-                    pageSize: pageSize * 2
+                    pageSize
                 });
 
                 // 清除定时器

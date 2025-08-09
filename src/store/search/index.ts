@@ -1,37 +1,28 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { TopicDetailState, TopicDetailAction } from '@/types';
-import { getTopicDetail, getTopicDetailList } from '@/apis';
+import type { SearchState, SearchAction } from '@/types';
+import { getAnimeSearch } from '@/apis';
 
 const DEFAULT_PAGE_SIZE = 10;
 const LOADING_DELAY = import.meta.env.VITE_LOADING_DELAY;
 
-const useTopicDetailStore = create<TopicDetailState & TopicDetailAction>()(
+const useSearchStore = create<SearchState & SearchAction>()(
     devtools((set, get) => ({
-        detail: null,
         loading: false,
         list: [],
         page: 1,
         pageSize: DEFAULT_PAGE_SIZE,
         total: 0,
+        hasMore: true,
 
-        fetachTopicDetail: async id => {
-            try {
-                const topicDetail = await getTopicDetail({ id });
-                set({ detail: topicDetail.data });
-            } catch (error) {
-                throw error;
-            }
-        },
-
-        fetchData: async id => {
+        fetchData: async (keyword: string) => {
             const { pageSize } = get();
 
             try {
                 set({ loading: true });
 
-                const response = await getTopicDetailList({
-                    id,
+                const response = await getAnimeSearch({
+                    keyword,
                     page: 1,
                     pageSize
                 });
@@ -49,7 +40,7 @@ const useTopicDetailStore = create<TopicDetailState & TopicDetailAction>()(
             }
         },
 
-        loadMore: async id => {
+        loadMore: async (keyword: string) => {
             const { list, loading, page, pageSize, hasMore } = get();
 
             // 检查是否可以加载更多
@@ -65,8 +56,8 @@ const useTopicDetailStore = create<TopicDetailState & TopicDetailAction>()(
 
                 const nextPage = page + 1;
 
-                const response = await getTopicDetailList({
-                    id,
+                const response = await getAnimeSearch({
+                    keyword,
                     page: nextPage,
                     pageSize
                 });
@@ -78,7 +69,6 @@ const useTopicDetailStore = create<TopicDetailState & TopicDetailAction>()(
                 const newList = [...list, ...rows];
                 const newHasMore = newList.length < total;
 
-                // 更新状态
                 set({
                     list: newList,
                     page: nextPage,
@@ -96,7 +86,6 @@ const useTopicDetailStore = create<TopicDetailState & TopicDetailAction>()(
 
         reset: () => {
             set({
-                detail: null,
                 loading: false,
                 list: [],
                 page: 1,
@@ -108,4 +97,4 @@ const useTopicDetailStore = create<TopicDetailState & TopicDetailAction>()(
     }))
 );
 
-export { useTopicDetailStore };
+export { useSearchStore };

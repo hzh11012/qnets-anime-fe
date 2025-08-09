@@ -23,7 +23,7 @@ const useRankStore = create<RankState & RankAction>()(
 
                 const response = await getAnimeHotRank({
                     page: 1,
-                    pageSize: pageSize * 2
+                    pageSize
                 });
 
                 const { rows = [], total = 0 } = response.data;

@@ -9,7 +9,6 @@ import type { FormValues } from '@/pages/anime/anime-rating';
 
 interface AnimeDescriptionProps {
     detail: AnimeDetailRes;
-    collectLoading: boolean;
     onCollected: () => void;
     ratingLoading: boolean;
     onRating: (values: FormValues, cb: () => void) => void;
@@ -20,7 +19,6 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = memo(
     ({
         detail,
         className,
-        collectLoading,
         onCollected,
         ratingLoading,
         onRating
@@ -87,7 +85,6 @@ const AnimeDescription: React.FC<AnimeDescriptionProps> = memo(
                         className={cn('w-22 h-8', {
                             'bg-card dark:bg-muted border-none': isCollected
                         })}
-                        disabled={collectLoading}
                         onClick={handleCollected}
                     >
                         <Heart />

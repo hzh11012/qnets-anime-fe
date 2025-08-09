@@ -103,6 +103,7 @@ const NoticeSheet: React.FC<NoticeSheetProps> = ({ children }) => {
                 side="left"
                 className={cn('w-md left-17 top-[67px] z-5')}
                 overlayClassName={cn('bg-transparent z-4')}
+                aria-describedby={undefined}
             >
                 <SheetHeader className={cn('bg-background p-5')}>
                     <SheetTitle>系统公告</SheetTitle>

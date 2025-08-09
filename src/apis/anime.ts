@@ -13,7 +13,9 @@ import type {
     AnimeSuggestParams,
     AnimeSuggestRes,
     AnimeBangumiParams,
-    AnimeBangumiRes
+    AnimeBangumiRes,
+    AnimeSearchParams,
+    AnimeSearchRes
 } from '@/types';
 
 const CLIENT_PREFIX = import.meta.env.VITE_CLIENT_PREFIX;
@@ -49,6 +51,10 @@ const getAnimeBangumi = (params: AnimeBangumiParams) => {
     return HttpClient.get<AnimeBangumiRes>(`${prefix}/bangumi`, params);
 };
 
+const getAnimeSearch = (params: AnimeSearchParams) => {
+    return HttpClient.get<AnimeSearchRes>(`${prefix}/search`, params);
+};
+
 export {
     getAnimeOptions,
     guessAnimeYouLike,
@@ -56,5 +62,6 @@ export {
     getAnimeRecommend,
     getAnimeHotRank,
     getAnimeSuggest,
-    getAnimeBangumi
+    getAnimeBangumi,
+    getAnimeSearch
 };

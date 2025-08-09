@@ -23,7 +23,7 @@ const useTopicStore = create<TopicState & TopicAction>()(
 
                 const response = await getTopicList({
                     page: 1,
-                    pageSize: pageSize * 2
+                    pageSize
                 });
 
                 const { rows = [], total = 0 } = response.data;

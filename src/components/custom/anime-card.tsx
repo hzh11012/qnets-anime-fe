@@ -21,19 +21,19 @@ const AnimeCardSkeleton: React.FC<AnimeCardSkeletonProps> = memo(
                 )}
             >
                 <Skeleton
-                    className={cn('relative rounded-lg', {
+                    className={cn('relative rounded-sm', {
                         'aspect-[3/4]': type === 'vertical',
                         'aspect-[16/9]': type === 'horizontal'
                     })}
                 />
                 <Skeleton
                     className={cn(
-                        'relative w-full md:w-3/4 h-5 mt-2.5 rounded-lg'
+                        'relative w-full md:w-3/4 h-5 mt-2.5 rounded-sm'
                     )}
                 />
                 <Skeleton
                     className={cn(
-                        'relative w-3/4 md:w-1/2 h-4 mt-1.5 rounded-lg'
+                        'relative w-3/4 md:w-1/2 h-4 mt-1.5 rounded-sm'
                     )}
                 />
             </div>
@@ -66,7 +66,7 @@ const AnimeCard: React.FC<AnimeCardProps> = memo(
             >
                 <div
                     className={cn(
-                        'relative rounded-lg bg-cover bg-center overflow-hidden duration-200',
+                        'relative rounded-sm bg-cover bg-center overflow-hidden duration-200',
                         'md:hover:scale-105 md:cursor-pointer',
                         'md:transition-[scale]',
                         {

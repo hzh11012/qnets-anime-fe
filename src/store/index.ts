@@ -9,3 +9,4 @@ export * from '@/store/search-suggest';
 export * from '@/store/bangumi';
 export * from '@/store/topic';
 export * from '@/store/topic-detail';
+export * from '@/store/search';

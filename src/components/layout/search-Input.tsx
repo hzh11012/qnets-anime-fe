@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState
+} from 'react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { CircleXIcon, SearchIcon } from 'lucide-react';
@@ -6,6 +12,7 @@ import { useClickAway } from 'ahooks';
 import { useSearchHistoryStore } from '@/store';
 import Exception from '@/components/custom/exception';
 import type { AnimeSuggestItem } from '@/types';
+import { useSearchParams } from 'react-router-dom';
 
 interface SearchInputProps {
     suggests: AnimeSuggestItem[];
@@ -22,9 +29,11 @@ const SearchInput: React.FC<SearchInputProps> = ({
     suggests,
     ...props
 }) => {
+    const [searchParams] = useSearchParams();
+    const _keyword = searchParams.get('keyword') || '';
     const containerRef = useRef<HTMLInputElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const [keyword, setKeyword] = useState('');
+    const [keyword, setKeyword] = useState(_keyword);
     const [isFocused, setIsFocused] = useState(false);
 
     useClickAway(() => setIsFocused(false), containerRef, 'mousedown');
@@ -38,6 +47,10 @@ const SearchInput: React.FC<SearchInputProps> = ({
     const createHistory = useSearchHistoryStore(state => state.createHistory);
     const removeHistory = useSearchHistoryStore(state => state.removeHistory);
     const clearHistory = useSearchHistoryStore(state => state.clearHistory);
+
+    useEffect(() => {
+        keyword && onChange(keyword);
+    }, []);
 
     // 处理搜索提交
     const handleSubmit = useCallback(() => {
