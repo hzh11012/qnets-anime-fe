@@ -3,7 +3,7 @@ import { devtools } from 'zustand/middleware';
 import type { RankState, RankAction } from '@/types';
 import { getAnimeHotRank } from '@/apis';
 
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 25;
 const LOADING_DELAY = import.meta.env.VITE_LOADING_DELAY;
 
 const useRankStore = create<RankState & RankAction>()(

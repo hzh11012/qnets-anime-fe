@@ -82,19 +82,15 @@ const AnimeGuideHeader: React.FC<AnimeGuideHeaderProps> = memo(
 AnimeGuideHeader.displayName = 'AnimeGuideHeader';
 
 interface AnimeGuideListProps {
-    ref: (node?: Element | null) => void;
     list: AnimeGuideItem[];
     loading: boolean;
-    hasMore: boolean;
     getSubTitle: (item: AnimeGuideItem) => string;
     onAnimeClick: (id: string) => void;
 }
 
 const AnimeGuideList: React.FC<AnimeGuideListProps> = ({
-    ref,
     list,
     loading,
-    hasMore,
     getSubTitle,
     onAnimeClick
 }) => {
@@ -127,8 +123,6 @@ const AnimeGuideList: React.FC<AnimeGuideListProps> = ({
                 );
             })}
             {loading && <AnimeSkeleton />}
-            {/* 触底加载的锚点 */}
-            {hasMore && <div ref={ref} style={{ height: 0 }} />}
         </div>
     );
 };
@@ -162,6 +156,7 @@ const AnimeGuide: React.FC<AnimeGuideProps> = ({
 
     const { ref } = useInView({
         threshold: 0,
+        skip: loading || !hasMore,
         onChange: inView => {
             if (inView && !loading && hasMore) {
                 onLoadMore();
@@ -222,14 +217,19 @@ const AnimeGuide: React.FC<AnimeGuideProps> = ({
             {isEmpty ? (
                 <Exception type="empty" />
             ) : (
-                <AnimeGuideList
-                    ref={ref}
-                    list={list}
-                    loading={loading}
-                    hasMore={hasMore}
-                    getSubTitle={getSubTitle}
-                    onAnimeClick={handleAnimeClick}
-                />
+                <>
+                    <AnimeGuideList
+                        list={list}
+                        loading={loading}
+                        getSubTitle={getSubTitle}
+                        onAnimeClick={handleAnimeClick}
+                    />
+                    {/* 触底加载的锚点 */}
+                    <div
+                        ref={hasMore ? ref : undefined}
+                        style={{ height: 0 }}
+                    />
+                </>
             )}
         </div>
     );

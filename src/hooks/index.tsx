@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigationType } from 'react-router-dom';
 import { useUserStore } from '@/store';
 import Exception from '@/components/custom/exception';
@@ -27,4 +27,22 @@ const useUserStatusCheck = () => {
     return null;
 };
 
-export { useScrollReset, useUserStatusCheck };
+const useMediaQuery = (query: string) => {
+    const [value, setValue] = useState(false);
+
+    useEffect(() => {
+        function onChange(event: MediaQueryListEvent) {
+            setValue(event.matches);
+        }
+
+        const result = matchMedia(query);
+        result.addEventListener('change', onChange);
+        setValue(result.matches);
+
+        return () => result.removeEventListener('change', onChange);
+    }, [query]);
+
+    return value;
+};
+
+export { useScrollReset, useUserStatusCheck, useMediaQuery };

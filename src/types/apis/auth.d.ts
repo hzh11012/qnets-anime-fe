@@ -9,4 +9,8 @@ interface UserInfoRes {
     updatedAt: string;
 }
 
-export { UserInfoRes };
+interface EditUserParams {
+    nickname: string;
+}
+
+export { UserInfoRes, EditUserParams };

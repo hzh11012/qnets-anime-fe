@@ -8,20 +8,16 @@ import { ContainerProvider } from '@/pages/search/anime-provider';
 import AnimeSearchSkeleton from '@/pages/search/anime-search-skeleton';
 
 interface AnimeSearchListProps {
-    ref: (node?: Element | null) => void;
     list: AnimeSearchItem[];
     loading: boolean;
-    hasMore: boolean;
     getPlayText: (item: AnimeSearchItem) => string;
     getStatusText: (item: AnimeSearchItem) => string;
     onAnimeClick: (id: string) => void;
 }
 
 const AnimeSearchList: React.FC<AnimeSearchListProps> = ({
-    ref,
     list,
     loading,
-    hasMore,
     getPlayText,
     getStatusText,
     onAnimeClick
@@ -39,6 +35,7 @@ const AnimeSearchList: React.FC<AnimeSearchListProps> = ({
                     const {
                         id,
                         name,
+                        highlightName,
                         type,
                         coverUrl,
                         tags,
@@ -61,6 +58,7 @@ const AnimeSearchList: React.FC<AnimeSearchListProps> = ({
                             videoId={videoId}
                             image={coverUrl}
                             title={name}
+                            highlightTitle={highlightName}
                             type={type}
                             tags={tags}
                             year={year}
@@ -78,8 +76,6 @@ const AnimeSearchList: React.FC<AnimeSearchListProps> = ({
                     );
                 })}
                 {loading && <AnimeSearchSkeleton />}
-                {/* 触底加载的锚点 */}
-                {hasMore && <div ref={ref} style={{ height: 0 }} />}
             </div>
         </ContainerProvider>
     );
@@ -106,6 +102,7 @@ const AnimeSearch: React.FC<AnimeSearchProps> = ({
 }) => {
     const { ref } = useInView({
         threshold: 0,
+        skip: loading || !hasMore,
         onChange: inView => {
             if (inView && !loading && hasMore) {
                 onLoadMore();
@@ -157,15 +154,20 @@ const AnimeSearch: React.FC<AnimeSearchProps> = ({
             {isEmpty ? (
                 <Exception type="empty" />
             ) : (
-                <AnimeSearchList
-                    ref={ref}
-                    list={list}
-                    loading={loading}
-                    hasMore={hasMore}
-                    getPlayText={getPlayText}
-                    getStatusText={getStatusText}
-                    onAnimeClick={handleAnimeClick}
-                />
+                <>
+                    <AnimeSearchList
+                        list={list}
+                        loading={loading}
+                        getPlayText={getPlayText}
+                        getStatusText={getStatusText}
+                        onAnimeClick={handleAnimeClick}
+                    />
+                    {/* 触底加载的锚点 */}
+                    <div
+                        ref={hasMore ? ref : undefined}
+                        style={{ height: 0 }}
+                    />
+                </>
             )}
         </div>
     );

@@ -1,19 +1,21 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { AnimeCard } from '@/components/custom/anime-card';
 import { cn } from '@/lib/utils';
-import type { AnimeBangumiItem } from '@/types';
+import type { CollectionItem } from '@/types';
 import { useInView } from 'react-intersection-observer';
+import { useNavigate } from 'react-router-dom';
+import { useMineStore } from '@/store';
 import Exception from '@/components/custom/exception';
 import AnimeSkeleton from '@/components/custom/anime-skeleton';
 
-interface AnimeBangumiListProps {
-    list: AnimeBangumiItem[];
+interface CollectionListProps {
+    list: CollectionItem[];
     loading: boolean;
-    getSubTitle: (item: AnimeBangumiItem) => string;
+    getSubTitle: (item: CollectionItem) => string;
     onAnimeClick: (id: string) => void;
 }
 
-const AnimeBangumiList: React.FC<AnimeBangumiListProps> = ({
+const CollectionList: React.FC<CollectionListProps> = ({
     list,
     loading,
     getSubTitle,
@@ -32,8 +34,8 @@ const AnimeBangumiList: React.FC<AnimeBangumiListProps> = ({
             )}
         >
             {list.map(item => {
-                const { id, name, coverUrl, videoId = '' } = item;
-                const remark = getSubTitle(item);
+                const { id, name, remark, coverUrl, videoId = '' } = item;
+                const tip = getSubTitle(item);
 
                 return (
                     <AnimeCard
@@ -41,6 +43,7 @@ const AnimeBangumiList: React.FC<AnimeBangumiListProps> = ({
                         type="vertical"
                         title={name}
                         remark={remark}
+                        tip={tip}
                         image={coverUrl}
                         onClick={() => onAnimeClick(videoId)}
                     />
@@ -51,19 +54,19 @@ const AnimeBangumiList: React.FC<AnimeBangumiListProps> = ({
     );
 };
 
-interface AnimeBangumiProps {
-    list: AnimeBangumiItem[];
+CollectionList.displayName = 'CollectionList';
+
+interface CollectionProps {
+    list: CollectionItem[];
     loading: boolean;
     hasMore: boolean;
     onLoadMore: () => void;
     onAnimeClick: (id: string) => void;
-    className?: string;
 }
 
-const AnimeBangumi: React.FC<AnimeBangumiProps> = ({
+const Collection: React.FC<CollectionProps> = ({
     list,
     hasMore,
-    className,
     loading,
     onLoadMore,
     onAnimeClick
@@ -85,7 +88,7 @@ const AnimeBangumi: React.FC<AnimeBangumiProps> = ({
         [onAnimeClick]
     );
 
-    const getSubTitle = useCallback((item: AnimeBangumiItem) => {
+    const getSubTitle = useCallback((item: CollectionItem) => {
         const { videoCount, status } = item;
 
         if (!videoCount) return '即将开播';
@@ -105,17 +108,12 @@ const AnimeBangumi: React.FC<AnimeBangumiProps> = ({
     );
 
     return (
-        <div
-            className={cn(
-                'size-full select-none transition-[margin] duration-200',
-                className
-            )}
-        >
+        <>
             {isEmpty ? (
                 <Exception type="empty" />
             ) : (
                 <>
-                    <AnimeBangumiList
+                    <CollectionList
                         list={list}
                         loading={loading}
                         getSubTitle={getSubTitle}
@@ -128,10 +126,69 @@ const AnimeBangumi: React.FC<AnimeBangumiProps> = ({
                     />
                 </>
             )}
-        </div>
+        </>
     );
 };
 
-AnimeBangumi.displayName = 'AnimeBangumi';
+Collection.displayName = 'Collection';
 
-export default AnimeBangumi;
+interface MineCollectionProsp {
+    className?: string;
+}
+
+const useCollection = () => {
+    const navigate = useNavigate();
+
+    const loading = useMineStore(state => state.collection.loading);
+    const list = useMineStore(state => state.collection.list);
+    const hasMore = useMineStore(state => state.collection.hasMore);
+    const fetchData = useMineStore(state => state.collection.fetchData);
+    const loadMore = useMineStore(state => state.collection.loadMore);
+    const reset = useMineStore(state => state.collection.reset);
+
+    useEffect(() => {
+        fetchData();
+
+        return () => {
+            reset();
+        };
+    }, [fetchData, reset]);
+
+    const handleLoadMore = useCallback(() => {
+        loadMore();
+    }, [loadMore]);
+
+    const handleAnimeClick = useCallback(
+        (id: string) => {
+            id && navigate(`/anime/${id}`);
+        },
+        [navigate]
+    );
+
+    return {
+        loading,
+        list,
+        hasMore,
+        handleLoadMore,
+        handleAnimeClick
+    };
+};
+
+const MineCollection: React.FC<MineCollectionProsp> = () => {
+    const { loading, list, hasMore, handleLoadMore, handleAnimeClick } =
+        useCollection();
+
+    return (
+        <Collection
+            loading={loading}
+            list={list}
+            hasMore={hasMore}
+            onLoadMore={handleLoadMore}
+            onAnimeClick={handleAnimeClick}
+        />
+    );
+};
+
+MineCollection.displayName = 'MineCollection';
+
+export default MineCollection;

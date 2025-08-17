@@ -21,18 +21,14 @@ const AnimeTopicHeader: React.FC<AnimeTopicHeaderProps> = memo(({ title }) => {
 AnimeTopicHeader.displayName = 'AnimeTopicHeader';
 
 interface AnimeTopicListProps {
-    ref: (node?: Element | null) => void;
     list: TopicOption[];
     loading: boolean;
-    hasMore: boolean;
     onTopicClick: (id: string) => void;
 }
 
 const AnimeTopicList: React.FC<AnimeTopicListProps> = ({
-    ref,
     list,
     loading,
-    hasMore,
     onTopicClick
 }) => {
     return (
@@ -62,8 +58,6 @@ const AnimeTopicList: React.FC<AnimeTopicListProps> = ({
                 );
             })}
             {loading && <AnimeSkeleton type="horizontal" />}
-            {/* 触底加载的锚点 */}
-            {hasMore && <div ref={ref} style={{ height: 0 }} />}
         </div>
     );
 };
@@ -90,6 +84,7 @@ const AnimeTopic: React.FC<AnimeTopicProps> = ({
 }) => {
     const { ref } = useInView({
         threshold: 0,
+        skip: loading || !hasMore,
         onChange: inView => {
             if (inView && !loading && hasMore) {
                 onLoadMore();
@@ -120,13 +115,18 @@ const AnimeTopic: React.FC<AnimeTopicProps> = ({
             {isEmpty ? (
                 <Exception type="empty" />
             ) : (
-                <AnimeTopicList
-                    ref={ref}
-                    list={list}
-                    loading={loading}
-                    hasMore={hasMore}
-                    onTopicClick={handleTopicClick}
-                />
+                <>
+                    <AnimeTopicList
+                        list={list}
+                        loading={loading}
+                        onTopicClick={handleTopicClick}
+                    />
+                    {/* 触底加载的锚点 */}
+                    <div
+                        ref={hasMore ? ref : undefined}
+                        style={{ height: 0 }}
+                    />
+                </>
             )}
         </div>
     );

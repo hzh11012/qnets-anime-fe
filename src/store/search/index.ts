@@ -3,7 +3,7 @@ import { devtools } from 'zustand/middleware';
 import type { SearchState, SearchAction } from '@/types';
 import { getAnimeSearch } from '@/apis';
 
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 25;
 const LOADING_DELAY = import.meta.env.VITE_LOADING_DELAY;
 
 const useSearchStore = create<SearchState & SearchAction>()(

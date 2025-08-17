@@ -8,4 +8,33 @@ interface VideoHistoryCreateParams {
     time: number;
 }
 
-export { VideoPlayParams, VideoHistoryCreateParams };
+interface VideoHistoryListParams {
+    page?: number;
+    pageSize?: number;
+}
+
+interface VideoHistoryItem {
+    id: string;
+    name: string;
+    time: number;
+    bannerUrl: string;
+    updatedAt: string;
+    video: {
+        title: string;
+        episode: number;
+    };
+    videoId: string;
+}
+
+interface VideoHistoryListRes {
+    total: number;
+    rows: VideoHistoryItem[];
+}
+
+export {
+    VideoPlayParams,
+    VideoHistoryCreateParams,
+    VideoHistoryListParams,
+    VideoHistoryItem,
+    VideoHistoryListRes
+};

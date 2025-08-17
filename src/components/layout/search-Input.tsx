@@ -66,6 +66,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const keyword = e.target.value;
         setKeyword(keyword);
+        setIsFocused(true);
         onChange(keyword);
     };
 
@@ -122,10 +123,15 @@ const SearchInput: React.FC<SearchInputProps> = ({
         >
             <Input
                 ref={inputRef}
-                className={cn('w-full pl-2.5 md:pl-4', {
-                    'pr-16 md:border-ring md:bg-transparent!': keyword,
-                    'pr-10.5': !keyword
-                })}
+                className={cn(
+                    'w-full pl-2.5 md:pl-4',
+                    'hover:bg-accent focus-visible:bg-transparent!',
+                    'bg-input border-transparent',
+                    {
+                        'pr-16 md:border-ring md:bg-transparent!': keyword,
+                        'pr-10.5': !keyword
+                    }
+                )}
                 value={keyword}
                 onChange={handleChange}
                 onFocus={() => setIsFocused(true)}
@@ -175,23 +181,25 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                             <div
                                                 key={index}
                                                 className={cn(
-                                                    'search-keywrod',
-                                                    'flex items-center h-8 text-sm cursor-pointer px-4 whitespace-pre',
+                                                    'flex items-center h-8 text-sm cursor-pointer px-4',
                                                     'hover:bg-input'
                                                 )}
-                                                dangerouslySetInnerHTML={{
-                                                    __html: item.highlightName.replace(
-                                                        / /g,
-                                                        '&nbsp;'
-                                                    )
-                                                }}
                                                 onClick={e =>
                                                     handleHistoryClick(
                                                         e,
                                                         item.name
                                                     )
                                                 }
-                                            ></div>
+                                            >
+                                                <div
+                                                    className={cn(
+                                                        'w-full break-all line-clamp-1'
+                                                    )}
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: item.highlightName
+                                                    }}
+                                                ></div>
+                                            </div>
                                         );
                                     })}
                                 </>

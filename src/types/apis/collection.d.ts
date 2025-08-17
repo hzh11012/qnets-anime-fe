@@ -22,9 +22,32 @@ interface CancelCollectionParams {
     id: string;
 }
 
+interface CollectionListParams {
+    page?: number;
+    pageSize?: number;
+}
+
+interface CollectionItem {
+    id: string;
+    name: string;
+    remark: string;
+    coverUrl: string;
+    status: number;
+    videoCount: number;
+    videoId?: string;
+}
+
+interface CollectionListRes {
+    total: number;
+    rows: CollectionItem[];
+}
+
 export {
     CollectionOptionsRes,
     CollectionOption,
     CreateCollectionParams,
-    CancelCollectionParams
+    CancelCollectionParams,
+    CollectionListParams,
+    CollectionItem,
+    CollectionListRes
 };

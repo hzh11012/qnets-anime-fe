@@ -131,6 +131,7 @@ AnimeSearchCardSkeleton.displayName = 'AnimeSearchCardSkeleton';
 interface AnimeSearchCardProps extends AnimeSearchCardSkeletonProps {
     videoId?: string;
     title: string;
+    highlightTitle: string;
     image: string;
     tags: string[];
     year: number;
@@ -152,6 +153,7 @@ const AnimeSearchCard: React.FC<AnimeSearchCardProps> = memo(
         videoId = '',
         image,
         title,
+        highlightTitle,
         type,
         tags,
         year,
@@ -202,9 +204,10 @@ const AnimeSearchCard: React.FC<AnimeSearchCardProps> = memo(
                             )}
                             title={title}
                             onClick={() => onAnimeClick(videoId)}
-                        >
-                            {title}
-                        </div>
+                            dangerouslySetInnerHTML={{
+                                __html: highlightTitle
+                            }}
+                        ></div>
                         <div
                             className={cn('text-card-foreground line-clamp-1 ')}
                             title={`${tags.join('/')} · ${year} · ${YEARS_MAP[month]} · ${statusText}`}

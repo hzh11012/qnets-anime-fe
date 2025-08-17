@@ -47,12 +47,22 @@ interface AnimeCardProps extends AnimeCardSkeletonProps {
     image: string;
     title: string;
     remark?: string;
+    time?: string;
     tip?: string;
     onClick: () => void;
 }
 
 const AnimeCard: React.FC<AnimeCardProps> = memo(
-    ({ type = 'vertical', title, image, remark, tip, className, onClick }) => {
+    ({
+        type = 'vertical',
+        title,
+        image,
+        remark,
+        time,
+        tip,
+        className,
+        onClick
+    }) => {
         return (
             <div
                 className={cn(
@@ -79,6 +89,15 @@ const AnimeCard: React.FC<AnimeCardProps> = memo(
                     }}
                     onClick={onClick}
                 >
+                    {time && (
+                        <div
+                            className={cn(
+                                'absolute z-2 text-white left-2 bottom-1 text-xs'
+                            )}
+                        >
+                            {time}
+                        </div>
+                    )}
                     {tip && (
                         <div
                             className={cn(

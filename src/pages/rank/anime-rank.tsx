@@ -31,19 +31,15 @@ const AnimeRankHeader: React.FC<AnimeRankHeaderProps> = memo(
 AnimeRankHeader.displayName = 'AnimeRankHeader';
 
 interface AnimeRankListProps {
-    ref: (node?: Element | null) => void;
     list: AnimeHotRank[];
     loading: boolean;
-    hasMore: boolean;
     getSubTitle: (item: AnimeHotRank) => string;
     onAnimeClick: (id: string) => void;
 }
 
 const AnimeRankList: React.FC<AnimeRankListProps> = ({
-    ref,
     list,
     loading,
-    hasMore,
     getSubTitle,
     onAnimeClick
 }) => {
@@ -76,8 +72,6 @@ const AnimeRankList: React.FC<AnimeRankListProps> = ({
                 );
             })}
             {loading && <AnimeSkeleton />}
-            {/* 触底加载的锚点 */}
-            {hasMore && <div ref={ref} style={{ height: 0 }} />}
         </div>
     );
 };
@@ -105,6 +99,7 @@ const AnimeRank: React.FC<AnimeRankProps> = ({
 }) => {
     const { ref } = useInView({
         threshold: 0,
+        skip: loading || !hasMore,
         onChange: inView => {
             if (inView && !loading && hasMore) {
                 onLoadMore();
@@ -149,14 +144,19 @@ const AnimeRank: React.FC<AnimeRankProps> = ({
             {isEmpty ? (
                 <Exception type="empty" />
             ) : (
-                <AnimeRankList
-                    ref={ref}
-                    list={list}
-                    loading={loading}
-                    hasMore={hasMore}
-                    getSubTitle={getSubTitle}
-                    onAnimeClick={handleAnimeClick}
-                />
+                <>
+                    <AnimeRankList
+                        list={list}
+                        loading={loading}
+                        getSubTitle={getSubTitle}
+                        onAnimeClick={handleAnimeClick}
+                    />
+                    {/* 触底加载的锚点 */}
+                    <div
+                        ref={hasMore ? ref : undefined}
+                        style={{ height: 0 }}
+                    />
+                </>
             )}
         </div>
     );

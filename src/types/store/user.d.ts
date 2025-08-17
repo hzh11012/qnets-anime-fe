@@ -7,6 +7,8 @@ interface UserState {
     isAllowSendComment: boolean;
 }
 
-interface UserAction {}
+interface UserAction {
+    updateNickname: (nickname: string) => void;
+}
 
 export { UserState, UserAction };

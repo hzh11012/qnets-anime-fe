@@ -149,6 +149,7 @@ interface AnimeBangumiRes {
 interface AnimeSearchItem {
     id: string;
     name: string;
+    highlightName: string;
     description: string;
     coverUrl: string;
     status: number;

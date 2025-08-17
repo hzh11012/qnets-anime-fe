@@ -20,19 +20,15 @@ const AnimeGuessHeader: React.FC<AnimeGuessHeaderProps> = memo(({ title }) => {
 AnimeGuessHeader.displayName = 'AnimeGuessHeader';
 
 interface AnimeGuessListProps {
-    ref: (node?: Element | null) => void;
     list: AnimeYouLike[];
     loading: boolean;
-    hasMore: boolean;
     getSubTitle: (item: AnimeYouLike) => string;
     onAnimeClick: (id: string) => void;
 }
 
 const AnimeGuessList: React.FC<AnimeGuessListProps> = ({
-    ref,
     list,
     loading,
-    hasMore,
     getSubTitle,
     onAnimeClick
 }) => {
@@ -64,8 +60,6 @@ const AnimeGuessList: React.FC<AnimeGuessListProps> = ({
                 );
             })}
             {loading && <AnimeSkeleton type="horizontal" />}
-            {/* 触底加载的锚点 */}
-            {hasMore && <div ref={ref} style={{ height: 0 }} />}
         </div>
     );
 };
@@ -97,6 +91,7 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
 
     const { ref } = useInView({
         threshold: 0,
+        skip: loading || !hasMore,
         onChange: inView => {
             if (inView && !loading && hasMore) {
                 onLoadMore();
@@ -136,13 +131,13 @@ const AnimeGuess: React.FC<AnimeGuessProps> = ({
         >
             <AnimeGuessHeader title={title} />
             <AnimeGuessList
-                ref={ref}
                 list={list}
                 loading={loading}
-                hasMore={hasMore}
                 getSubTitle={getSubTitle}
                 onAnimeClick={handleAnimeClick}
             />
+            {/* 触底加载的锚点 */}
+            <div ref={hasMore ? ref : undefined} style={{ height: 0 }} />
         </div>
     );
 };

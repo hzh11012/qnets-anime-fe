@@ -59,7 +59,11 @@ const AppSidebar: React.FC = () => {
             <SidebarFooter
                 className={cn('items-center justify-center gap-6 pb-8')}
             >
-                <Avatar className={cn('size-8 cursor-pointer')} title="空间">
+                <Avatar
+                    className={cn('size-8 cursor-pointer')}
+                    title="我的"
+                    onClick={() => navigate('mine')}
+                >
                     <AvatarImage src={user.avatar || ''} alt={user.nickname} />
                     <AvatarFallback>
                         <FailAvatar />

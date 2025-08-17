@@ -19,10 +19,7 @@ interface NoticeSheetProps {
 const NoticeItem: React.FC<{ item: NoticeItem }> = memo(({ item }) => {
     const { title, content, createdAt } = item;
 
-    const formattedDate = useMemo(
-        () => formatDate(createdAt, 'yyyy-MM-dd'),
-        [createdAt]
-    );
+    const formattedDate = useMemo(() => formatDate(createdAt), [createdAt]);
 
     return (
         <div
@@ -46,29 +43,15 @@ const NoticeItem: React.FC<{ item: NoticeItem }> = memo(({ item }) => {
 NoticeItem.displayName = 'NoticeItem';
 
 interface NoticeListProps {
-    ref: (node?: Element | null) => void;
     list: NoticeItem[];
-    hasMore: boolean;
 }
 
-const NoticeList: React.FC<NoticeListProps> = ({ ref, list, hasMore }) => {
+const NoticeList: React.FC<NoticeListProps> = ({ list }) => {
     return (
-        <div
-            className={cn(
-                'p-5 bg-input dark:bg-black h-[calc(100%-8.25rem)] overflow-auto'
-            )}
-        >
-            {list.length ? (
-                <div className={cn('flex flex-col')}>
-                    {list.map(item => (
-                        <NoticeItem key={item.id} item={item} />
-                    ))}
-                    {/* 触底加载的锚点 */}
-                    {hasMore && <div ref={ref} style={{ height: 0 }} />}
-                </div>
-            ) : (
-                <Exception type="empty" className={cn('w-64')} />
-            )}
+        <div className={cn('flex flex-col')}>
+            {list.map(item => (
+                <NoticeItem key={item.id} item={item} />
+            ))}
         </div>
     );
 };
@@ -88,12 +71,18 @@ const NoticeSheet: React.FC<NoticeSheetProps> = ({ children }) => {
 
     const { ref } = useInView({
         threshold: 0,
+        skip: loading || !hasMore,
         onChange: inView => {
             if (inView && !loading && hasMore) {
                 loadMore();
             }
         }
     });
+
+    const isEmpty = useMemo(
+        () => !list.length && !loading,
+        [list.length, loading]
+    );
 
     return (
         <Sheet>
@@ -108,7 +97,24 @@ const NoticeSheet: React.FC<NoticeSheetProps> = ({ children }) => {
                 <SheetHeader className={cn('bg-background p-5')}>
                     <SheetTitle>系统公告</SheetTitle>
                 </SheetHeader>
-                <NoticeList ref={ref} list={list} hasMore={hasMore} />
+                <div
+                    className={cn(
+                        'p-5 bg-input dark:bg-black h-[calc(100%-8.25rem)] overflow-auto'
+                    )}
+                >
+                    {isEmpty ? (
+                        <Exception type="empty" className={cn('w-64')} />
+                    ) : (
+                        <>
+                            <NoticeList list={list} />
+                            {/* 触底加载的锚点 */}
+                            <div
+                                ref={hasMore ? ref : undefined}
+                                style={{ height: 0 }}
+                            />
+                        </>
+                    )}
+                </div>
             </SheetContent>
         </Sheet>
     );

@@ -35,8 +35,41 @@ const createLazyComponent = (
     });
 };
 
-const formatDate = (date: string, format: string = 'DD tt') => {
-    return DateTime.fromISO(date).toFormat(format);
+const formatDate = (datetime: string) => {
+    // 确保输入是Date对象
+    const date = new Date(datetime);
+
+    // 当前日期和时间
+    const now = new Date();
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0); // 今天开始时间
+
+    // 目标日期的年月日
+    const targetDate = new Date(date);
+    targetDate.setHours(0, 0, 0, 0); // 目标日期开始时间
+
+    // 时间差（毫秒）
+    const timeDiff = todayStart.getTime() - targetDate.getTime();
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    // 格式化数字为两位数
+    const padZero = (num: number): string => num.toString().padStart(2, '0');
+
+    // 提取时间部分
+    const hours = padZero(date.getHours());
+    const minutes = padZero(date.getMinutes());
+    const timeStr = `${hours}:${minutes}`;
+
+    // 判断日期类型
+    if (timeDiff < oneDay) {
+        return `今天 ${timeStr}`;
+    } else if (timeDiff < 2 * oneDay) {
+        return `昨天 ${timeStr}`;
+    } else if (date.getFullYear() === now.getFullYear()) {
+        return `${padZero(date.getMonth() + 1)}-${padZero(date.getDate())}`;
+    } else {
+        return `${padZero(date.getMonth() + 1)}-${padZero(date.getDate())} ${date.getFullYear()}`;
+    }
 };
 
 const formateNumber = (x: number) => {

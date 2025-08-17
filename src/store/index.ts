@@ -10,3 +10,4 @@ export * from '@/store/bangumi';
 export * from '@/store/topic';
 export * from '@/store/topic-detail';
 export * from '@/store/search';
+export * from '@/store/mine';

@@ -13,7 +13,7 @@ html {
     scrollbar-color: #888 transparent;
 }
 
-.search-keywrod em {
+.keyword {
     font-style: normal;
     line-height: normal;
     color: var(--primary);

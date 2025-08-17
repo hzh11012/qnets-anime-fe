@@ -1,5 +1,9 @@
 import { HttpClient } from '@/lib/request';
-import type { VideoHistoryCreateParams } from '@/types';
+import type {
+    VideoHistoryCreateParams,
+    VideoHistoryListParams,
+    VideoHistoryListRes
+} from '@/types';
 
 const CLIENT_PREFIX = import.meta.env.VITE_CLIENT_PREFIX;
 const prefix = `/api/${CLIENT_PREFIX}/video-histories`;
@@ -9,4 +13,8 @@ const saveHistory = (params: VideoHistoryCreateParams) => {
     return HttpClient.post(`${prefix}/${id}`, rest);
 };
 
-export { saveHistory };
+const getHistoryList = (params: VideoHistoryListParams) => {
+    return HttpClient.get<VideoHistoryListRes>(`${prefix}`, params);
+};
+
+export { saveHistory, getHistoryList };

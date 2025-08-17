@@ -3,7 +3,7 @@ import { devtools } from 'zustand/middleware';
 import type { TopicState, TopicAction } from '@/types';
 import { getTopicList } from '@/apis';
 
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 25;
 const LOADING_DELAY = import.meta.env.VITE_LOADING_DELAY;
 
 const useTopicStore = create<TopicState & TopicAction>()(

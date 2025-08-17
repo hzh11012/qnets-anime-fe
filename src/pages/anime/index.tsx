@@ -35,42 +35,49 @@ import VideoSkeleton from '@/components/custom/video-skeleton';
 
 const SIDEBAR_WIDTH = '23.75rem';
 
-const AnimeDropdownMenu: React.FC = memo(() => {
-    const navigate = useNavigate();
-    const handleGoHome = useCallback(() => navigate('/'), [navigate]);
-    const handleReload = useCallback(() => navigate(0), [navigate]);
+interface AnimeDropdownMenuProps {
+    className?: string;
+}
 
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <div
-                    className={cn(
-                        'absolute flex items-center justify-center rounded-sm size-8 top-2 right-5 text-foreground',
-                        'transition-colors duration-200 hover:bg-accent md:cursor-pointer'
-                    )}
-                >
-                    <EllipsisVertical size={18} />
-                </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-fit" align="end">
-                <DropdownMenuItem
-                    className={cn('text-foreground md:cursor-pointer')}
-                    onClick={handleGoHome}
-                >
-                    <House className={cn('text-foreground')} />
-                    回到首页
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    className={cn('text-foreground md:cursor-pointer')}
-                    onClick={handleReload}
-                >
-                    <RefreshCcw className={cn('text-foreground')} />
-                    重新加载
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
-});
+const AnimeDropdownMenu: React.FC<AnimeDropdownMenuProps> = memo(
+    ({ className }) => {
+        const navigate = useNavigate();
+        const handleGoHome = useCallback(() => navigate('/'), [navigate]);
+        const handleReload = useCallback(() => navigate(0), [navigate]);
+
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <div
+                        className={cn(
+                            'absolute flex items-center justify-center rounded-sm size-8 top-2 right-5 text-foreground',
+                            'transition-colors duration-200 hover:bg-accent md:cursor-pointer',
+                            className
+                        )}
+                    >
+                        <EllipsisVertical size={18} />
+                    </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-fit" align="end">
+                    <DropdownMenuItem
+                        className={cn('text-foreground md:cursor-pointer')}
+                        onClick={handleGoHome}
+                    >
+                        <House className={cn('text-foreground')} />
+                        回到首页
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        className={cn('text-foreground md:cursor-pointer')}
+                        onClick={handleReload}
+                    >
+                        <RefreshCcw className={cn('text-foreground')} />
+                        重新加载
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        );
+    }
+);
 
 AnimeDropdownMenu.displayName = 'AnimeDropdownMenu';
 
@@ -369,7 +376,9 @@ const Anime: React.FC = () => {
                     </TabsContent>
                 </Tabs>
 
-                <AnimeDropdownMenu />
+                <AnimeDropdownMenu
+                    className={cn('md:group-data-[state=collapsed]:hidden')}
+                />
             </Sidebar>
         </SidebarProvider>
     );
