@@ -165,9 +165,7 @@ const staticRoutes: RouteObject[] = [
             },
             {
                 path: '*',
-                lazy: createLazyComponent(
-                    () => import('@/components/custom/exception')
-                )
+                element: <Exception />
             }
         ]
     },

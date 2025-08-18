@@ -370,9 +370,11 @@ const Anime: React.FC = () => {
                             </>
                         )}
                     </TabsContent>
-                    <TabsContent className={cn('p-5')} value="comment">
-                        {/* 评论区可后续实现 */}
-                        暂无评论
+                    <TabsContent
+                        className={cn('p-5 flex items-center justify-center')}
+                        value="comment"
+                    >
+                        敬请期待
                     </TabsContent>
                 </Tabs>
 
