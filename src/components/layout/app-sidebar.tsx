@@ -22,6 +22,7 @@ const sidebarBtnClass =
 
 const AppSidebar: React.FC = () => {
     const user = useUserStore(state => state.userInfo);
+    const logout = useUserStore(state => state.logout);
     const navigate = useNavigate();
 
     return (
@@ -82,7 +83,11 @@ const AppSidebar: React.FC = () => {
                 <div className={cn(sidebarBtnClass)} title="主题">
                     <ThemeSwitch />
                 </div>
-                <div className={cn(sidebarBtnClass)} title="退出">
+                <div
+                    className={cn(sidebarBtnClass)}
+                    title="退出"
+                    onClick={logout}
+                >
                     <LogOut size={22} />
                 </div>
             </SidebarFooter>

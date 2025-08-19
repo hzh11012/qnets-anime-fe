@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { UserState, UserAction } from '@/types';
+import { logout } from '@/apis';
 
 const useUserStore = create<UserState & UserAction>()(
     persist(
@@ -24,6 +25,11 @@ const useUserStore = create<UserState & UserAction>()(
                 set(state => {
                     state.userInfo.nickname = nickname;
                 });
+            },
+
+            logout: async () => {
+                await logout();
+                window.location.reload();
             }
         })),
         {

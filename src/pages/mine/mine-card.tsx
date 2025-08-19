@@ -10,10 +10,11 @@ interface AnimeRankHeaderProps {
     nickName: string;
     avatar: string | null;
     email: string;
+    onLogout: () => void;
 }
 
 const MineCard: React.FC<AnimeRankHeaderProps> = memo(
-    ({ nickName, email, avatar }) => {
+    ({ nickName, email, avatar, onLogout }) => {
         return (
             <div
                 className={cn(
@@ -51,7 +52,12 @@ const MineCard: React.FC<AnimeRankHeaderProps> = memo(
                     </div>
                 </div>
                 <div className={cn('flex items-center gap-4')}>
-                    <Button variant="link" size="icon" title="退出">
+                    <Button
+                        variant="link"
+                        size="icon"
+                        title="退出"
+                        onClick={onLogout}
+                    >
                         <LogOut className="size-5" />
                     </Button>
                 </div>

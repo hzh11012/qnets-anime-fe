@@ -9,6 +9,7 @@ interface UserState {
 
 interface UserAction {
     updateNickname: (nickname: string) => void;
+    logout: () => Primise<void>;
 }
 
 export { UserState, UserAction };

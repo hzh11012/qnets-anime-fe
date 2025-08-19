@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
 import { useUserStore } from '@/store';
@@ -12,6 +12,11 @@ const Mine: React.FC = () => {
     const nickName = useUserStore(state => state.userInfo.nickname);
     const avatar = useUserStore(state => state.userInfo.avatar);
     const email = useUserStore(state => state.userInfo.email);
+    const logout = useUserStore(state => state.logout);
+
+    const handledLogout = useCallback(() => {
+        logout();
+    }, [logout]);
 
     return (
         <div
@@ -21,7 +26,12 @@ const Mine: React.FC = () => {
             )}
         >
             {createPortal(<SettingCard />, document.body)}
-            <MineCard nickName={nickName} avatar={avatar} email={email} />
+            <MineCard
+                nickName={nickName}
+                avatar={avatar}
+                email={email}
+                onLogout={handledLogout}
+            />
             <Tabs
                 defaultValue="collection"
                 className={cn('size-full select-none')}
