@@ -110,17 +110,17 @@ const useHome = () => {
 
     const handleAllAnimeClick = useCallback(
         (type: number) => {
-            navigate(`bangumi?type=${type}`);
+            navigate(`/bangumi?type=${type}`);
         },
         [navigate]
     );
 
     const handleAllTopicClick = useCallback(() => {
-        navigate('topic');
+        navigate('/topic');
     }, [navigate]);
 
     const handleAllCollectionClick = useCallback(() => {
-        navigate('mine');
+        navigate('/mine');
     }, [navigate]);
 
     const handleLoadMore = useCallback(() => {

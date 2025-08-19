@@ -62,7 +62,7 @@ const AppSidebar: React.FC = () => {
                 <Avatar
                     className={cn('size-8 cursor-pointer')}
                     title="我的"
-                    onClick={() => navigate('mine')}
+                    onClick={() => navigate('/mine')}
                 >
                     <AvatarImage src={user.avatar || ''} alt={user.nickname} />
                     <AvatarFallback>
